@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mnemo — Agent Mémoire Personnel</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <span class="nav-logo">Mnemo</span>
+  <ul class="nav-links">
+    <li><a href="#philosophy">Philosophie</a></li>
+    <li><a href="#pipeline">Pipeline</a></li>
+    <li><a href="#ingestion">Ingestion</a></li>
+    <li><a href="#stockage">Stockage</a></li>
+    <li><a href="#tests">Tests</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+  </ul>
+  <span class="nav-badge">v3 · Phase 2</span>
+</nav>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+
+  <p class="hero-eyebrow">Agent mémoire personnel · CrewAI + SQLite + Ollama</p>
+
+  <h1 class="hero-title">
+    <span class="line1">Un agent qui</span>
+    <span class="line2">se souvient.</span>
+  </h1>
+
+  <p class="hero-sub">
+    Mémoire hybride long terme, ingestion de documents, retrieval vectoriel et keyword — tout tourne localement, hors cloud, sans compromis sur la vie privée.
+  </p>
+
+  <div class="hero-ctas">
+    <a href="#pipeline" class="btn btn-primary">
+      <span>Voir l'architecture</span>
+      <span>↓</span>
+    </a>
+    <a href="#tests" class="btn btn-ghost">220 tests · 0 fails</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hstat"><span class="hstat-num">220</span><span class="hstat-label">Tests ✅</span></div>
+    <div class="hstat"><span class="hstat-num">8</span><span class="hstat-label">Tables SQLite</span></div>
+    <div class="hstat"><span class="hstat-num">7</span><span class="hstat-label">Formats ingérés</span></div>
+    <div class="hstat"><span class="hstat-num">5</span><span class="hstat-label">Bugs attrapés</span></div>
+    <div class="hstat"><span class="hstat-num">100%</span><span class="hstat-label">Local · offline</span></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ PHILOSOPHIE ══ -->
+<section id="philosophy">
+  <div class="reveal">
+    <span class="section-label">Philosophie</span>
+    <h2 class="section-title">Conçu pour durer.<br>Pas pour impressionner.</h2>
+    <p class="section-desc">Chaque décision d'architecture a été prise pour la robustesse à long terme : mémoire éditable manuellement, zéro vendor lock-in, tests avant features.</p>
+  </div>
+
+  <div class="philosophy-grid reveal">
+    <div class="phil-card">
+      <div class="phil-icon">📄</div>
+      <div class="phil-title">memory.md comme source de vérité</div>
+      <div class="phil-desc">La mémoire personnelle reste un fichier Markdown lisible et éditable humainement. Versionnable avec git. SQLite est un index — pas la source.</div>
+    </div>
+    <div class="phil-card">
+      <div class="phil-icon">🔒</div>
+      <div class="phil-title">100% local, 100% privé</div>
+      <div class="phil-desc">Ollama en Docker, SQLite sur disque, aucun appel vers un service externe. Ce qui est dit à Mnemo reste sur la machine.</div>
+    </div>
+    <div class="phil-card">
+      <div class="phil-icon">🧪</div>
+      <div class="phil-title">Tests avant features</div>
+      <div class="phil-desc">Phase de stabilisation dédiée avant d'ajouter des fonctionnalités. 5 vrais bugs de production attrapés par les tests avant d'atteindre l'utilisateur.</div>
+    </div>
+    <div class="phil-card">
+      <div class="phil-icon">🧠</div>
+      <div class="phil-title">Mémoire ≠ base de données</div>
+      <div class="phil-desc">La mémoire personnelle et les documents ingérés sont séparés physiquement mais fusionnés dans le retrieval — pour que l'agent sache d'où vient chaque information.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ PIPELINE ══ -->
+<div class="pipeline-section">
+<div>
+  <section id="pipeline" style="padding:0;">
+    <div class="reveal">
+      <span class="section-label">Architecture</span>
+      <h2 class="section-title">5 agents, un seul but.</h2>
+      <p class="section-desc">Deux crews CrewAI orchestrent la conversation et la consolidation mémoire. Chaque agent a un rôle unique et un modèle adapté à sa tâche.</p>
+    </div>
+
+    <div class="pipeline-flow reveal">
+      <div class="pf-step">
+        <div class="pf-num">01</div>
+        <div class="pf-title">Évaluateur</div>
+        <div class="pf-desc">Analyse le message brut. Produit un JSON structuré qui oriente tout le pipeline.</div>
+        <div class="pf-tags">
+          <span class="pf-tag">intent</span>
+          <span class="pf-tag">needs_memory</span>
+          <span class="pf-tag">memory_query</span>
+        </div>
+        <div style="margin-top:12px; font-size:0.58rem; color:var(--muted);">⚙ qwen2.5:3b · rapide</div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">02</div>
+        <div class="pf-title">Memory Retriever</div>
+        <div class="pf-desc">Construit le contexte via <code>retrieve_all()</code> — mémoire personnelle ET documents ingérés fusionnés par RRF.</div>
+        <div class="pf-tags">
+          <span class="pf-tag">🧠 mémoire</span>
+          <span class="pf-tag">📄 documents</span>
+        </div>
+        <div style="margin-top:12px; font-size:0.58rem; color:var(--muted);">⚙ qwen2.5:7b · function calling</div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">03</div>
+        <div class="pf-title">Agent Principal</div>
+        <div class="pf-desc">Seul agent qui parle à l'utilisateur. Reçoit message + contexte enrichi. Meilleur modèle ici.</div>
+        <div class="pf-tags">
+          <span class="pf-tag">réponse finale</span>
+        </div>
+        <div style="margin-top:12px; font-size:0.58rem; color:var(--muted);">⚙ qwen2.5:14b · qualité max</div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">04</div>
+        <div class="pf-title">Consolidateur</div>
+        <div class="pf-desc">En fin de session, extrait les faits méritant une persistance long terme. Ignore le trivial.</div>
+        <div class="pf-tags">
+          <span class="pf-tag">facts[]</span>
+          <span class="pf-tag">worth_persisting</span>
+        </div>
+        <div style="margin-top:12px; font-size:0.58rem; color:var(--muted);">⚙ qwen2.5:7b · raisonnement</div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">05</div>
+        <div class="pf-title">Memory Writer</div>
+        <div class="pf-desc">Écrit dans memory.md sans dupliquer, déclenche la re-sync SQLite. Sanitize l'Unicode avant écriture.</div>
+        <div class="pf-tags">
+          <span class="pf-tag">update_markdown</span>
+          <span class="pf-tag">sync_db</span>
+        </div>
+        <div style="margin-top:12px; font-size:0.58rem; color:var(--muted);">⚙ qwen2.5:7b · function calling</div>
+      </div>
+    </div>
+  </section>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ INGESTION ══ -->
+<section id="ingestion">
+  <div class="reveal">
+    <span class="section-label">Phase 2 — Perception</span>
+    <h2 class="section-title">Ingérer n'importe quel document.</h2>
+    <p class="section-desc">Un seul dispatcher <code>ingest_file(path)</code> — détection automatique du format, déduplication par hash MD5, pipeline commun.</p>
+  </div>
+
+  <div class="ingest-grid reveal">
+    <div class="ing-card pdf">
+      <div class="ing-icon">📄</div>
+      <div class="ing-title">PDF</div>
+      <div class="ing-desc">Extraction page par page via pypdf. Nettoyage des césures et espaces. Barre de progression.</div>
+      <div class="ing-tags"><span class="ing-tag">pypdf</span><span class="ing-tag">clean_text()</span><span class="ing-tag">sliding window</span></div>
+    </div>
+    <div class="ing-card docx">
+      <div class="ing-icon">📝</div>
+      <div class="ing-title">DOCX</div>
+      <div class="ing-desc">Paragraphes, headings préfixés <code>#</code> et tableaux <code>col | col</code> via python-docx.</div>
+      <div class="ing-tags"><span class="ing-tag">python-docx</span><span class="ing-tag">heading levels</span><span class="ing-tag">tables</span></div>
+    </div>
+    <div class="ing-card txt">
+      <div class="ing-icon">📃</div>
+      <div class="ing-title">TXT &amp; Markdown</div>
+      <div class="ing-desc">Lecture directe UTF-8. Pages fictives de ~500 mots. Zéro dépendance externe.</div>
+      <div class="ing-tags"><span class="ing-tag">UTF-8</span><span class="ing-tag">500 mots/page</span></div>
+    </div>
+    <div class="ing-card code">
+      <div class="ing-icon">💻</div>
+      <div class="ing-title">Code source</div>
+      <div class="ing-desc">Python → AST précis (fonctions + classes). JS, TS, C, Java, shell → regex patterns. Header langage dans chaque chunk.</div>
+      <div class="ing-tags"><span class="ing-tag">.py .js .ts</span><span class="ing-tag">.c .cpp .cs .java</span><span class="ing-tag">.sh .ps1</span></div>
+    </div>
+    <div class="ing-card retrieval">
+      <div class="ing-icon">🔍</div>
+      <div class="ing-title">retrieve_all() — fusion globale</div>
+      <div class="ing-desc">Mémoire personnelle + documents ingérés fusionnés par Reciprocal Rank Fusion. Le prompt distingue la source : <code>🧠</code> mémoire personnelle · <code>📄 fichier.pdf — p.42</code> document.</div>
+      <div class="flow-banner">
+        <span class="fb-step" style="color:var(--a1);">🧠 FTS5 + cosine mémoire</span>
+        <span class="fb-sep">+</span>
+        <span class="fb-step" style="color:var(--a6);">📄 FTS5 + cosine docs</span>
+        <span class="fb-sep">→</span>
+        <span class="fb-step">RRF × importance × freshness</span>
+        <span class="fb-sep">→</span>
+        <span class="fb-step">top K chunks</span>
+      </div>
+    </div>
+    <div class="ing-card dedup">
+      <div class="ing-icon">🔐</div>
+      <div class="ing-title">Déduplication MD5</div>
+      <div class="ing-desc">Hash MD5 du fichier entier. Double ingestion détectée instantanément. Chunk ID = hash(doc_id + page + index + contenu) — élimine les collisions.</div>
+      <div class="ing-tags"><span class="ing-tag">file_hash()</span><span class="ing-tag">is_already_ingested()</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ STOCKAGE ══ -->
+<section id="stockage">
+  <div class="reveal">
+    <span class="section-label">Stockage</span>
+    <h2 class="section-title">Deux mémoires,<br>un seul retrieval.</h2>
+    <p class="section-desc">La mémoire personnelle et les documents sont séparés physiquement mais fusionnés à la recherche — pour que l'agent sache toujours d'où vient l'information.</p>
+  </div>
+
+  <div class="storage-two reveal" style="margin-top:50px;">
+    <div class="stor-card" style="border-color:rgba(247,183,49,0.3);">
+      <div class="stor-title" style="color:var(--a3);">📄 memory.md</div>
+      <div class="stor-desc">Source de vérité humaine-lisible. Mémoire personnelle uniquement — identité, préférences, projets, historique. Éditable à la main.</div>
+      <div class="stor-tags">
+        <span class="stor-tag">🧑 Identité Utilisateur</span>
+        <span class="stor-tag">🤖 Identité Agent</span>
+        <span class="stor-tag">📚 Connaissances</span>
+        <span class="stor-tag">🔁 Historique sessions</span>
+        <span class="stor-tag">⚠️ À ne jamais oublier</span>
+      </div>
+    </div>
+    <div class="stor-card" style="border-color:rgba(124,106,247,0.3);">
+      <div class="stor-title" style="color:var(--a1);">🗄️ SQLite — 8 tables</div>
+      <div class="stor-desc">Index double FTS5 + vectoriel (768d float32). Les 4 tables Phase 2 (violet) sont séparées mais participent au même retrieval.</div>
+      <div class="stor-tags">
+        <span class="stor-tag h1">chunks</span>
+        <span class="stor-tag h1">embeddings</span>
+        <span class="stor-tag h1">chunks_fts</span>
+        <span class="stor-tag h1">sessions</span>
+        <span class="stor-tag h1">session_facts</span>
+        <span class="stor-tag h1">file_state</span>
+        <span class="stor-tag h6">documents</span>
+        <span class="stor-tag h6">doc_chunks</span>
+        <span class="stor-tag h6">doc_embeddings</span>
+        <span class="stor-tag h6">doc_chunks_fts</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="rrf-banner reveal">
+    <div class="rrf-title">retrieve_all(query, top_k_final=5)</div>
+    <div class="rrf-flow">
+      <span class="rrf-step">FTS5 keyword</span>
+      <span class="rrf-sep">+</span>
+      <span class="rrf-step">cosine similarity</span>
+      <span class="rrf-sep">→</span>
+      <span class="rrf-step">adaptive weights</span>
+      <span class="rrf-sep">→</span>
+      <span class="rrf-step">RRF × importance × freshness</span>
+      <span class="rrf-sep">→</span>
+      <span class="rrf-step">merge memory + docs</span>
+      <span class="rrf-sep">→</span>
+      <span class="rrf-step">top K chunks</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ BUGS ══ -->
+<div class="bugs-section">
+<div>
+  <section style="padding:0;">
+    <div class="reveal">
+      <span class="section-label">Qualité</span>
+      <h2 class="section-title">Les tests ont trouvé<br>5 vrais bugs.</h2>
+      <p class="section-desc">Pas des bugs hypothétiques — des comportements incorrects qui auraient atteint la production sans la phase de stabilisation.</p>
+    </div>
+
+    <div class="bugs-grid reveal">
+      <div class="bug-card">
+        <span class="bug-badge">BUG #1</span>
+        <div class="bug-title">Perte silencieuse de chunks</div>
+        <div class="bug-cause">Le dernier <code>###</code> de chaque <code>##</code> dans memory.md était perdu lors du parsing. Des sous-sections entières n'étaient jamais indexées en SQLite.</div>
+        <div class="bug-fix">Sauvegarde du chunk courant avant reset à chaque changement de section</div>
+      </div>
+      <div class="bug-card">
+        <span class="bug-badge">BUG #2</span>
+        <div class="bug-title">Crash sur query vide</div>
+        <div class="bug-cause">SQLite FTS5 lève <code>OperationalError</code> sur une string vide. Si l'évaluateur produisait une <code>memory_query</code> vide, tout le pipeline plantait.</div>
+        <div class="bug-fix">Guard <code>if not query or not query.strip(): return []</code> en tête de search_keyword()</div>
+      </div>
+      <div class="bug-card">
+        <span class="bug-badge">BUG #3</span>
+        <div class="bug-title">Collision de chunk_id</div>
+        <div class="bug-cause">Hash MD5 sur le contenu seul : deux passages identiques dans un document (headers répétés, formules) produisaient le même ID — le second était silencieusement skippé.</div>
+        <div class="bug-fix">Hash sur <code>doc_id:page:chunk_index:contenu</code> — chaque position est garantie unique</div>
+      </div>
+      <div class="bug-card">
+        <span class="bug-badge">BUG #4</span>
+        <div class="bug-title">AttributeError sur para.style</div>
+        <div class="bug-cause">Les paragraphes créés par copier-coller ou outils tiers dans Word peuvent avoir <code>style=None</code>. Crash immédiat à l'ingestion de tout DOCX réel.</div>
+        <div class="bug-fix">Guard triple <code>para.style and para.style.name and para.style.name.startswith(...)</code></div>
+      </div>
+      <div class="bug-card">
+        <span class="bug-badge">BUG #5</span>
+        <div class="bug-title">Fonctions courtes disparaissent</div>
+        <div class="bug-cause">Le seuil MIN_CHUNK_LEN=80 chars filtrait des fonctions valides comme <code>fetchData</code> ou <code>autre_fonction</code>. Des pans entiers du code n'étaient pas indexés.</div>
+        <div class="bug-fix">Seuil MIN_CHUNK_LEN désactivé pour le code — la structure sémantique prime sur la longueur</div>
+      </div>
+      <div class="bug-card">
+        <span class="bug-badge">BUG #6</span>
+        <div class="bug-title">Doublons AST walk()</div>
+        <div class="bug-cause"><code>ast.walk()</code> descend récursivement dans tous les noeuds — les méthodes de classes étaient indexées deux fois, causant du bruit dans le retrieval code.</div>
+        <div class="bug-fix">Remplacé par <code>ast.iter_child_nodes()</code> — niveau module uniquement</div>
+      </div>
+    </div>
+  </section>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ TESTS ══ -->
+<section id="tests">
+  <div class="reveal">
+    <span class="section-label">Tests</span>
+    <h2 class="section-title">220 tests.<br>Zéro appel Ollama requis.</h2>
+    <p class="section-desc">Chaque fichier est testable sans infrastructure externe grâce aux mocks. Le marqueur <code>@pytest.mark.ollama</code> isole les tests nécessitant le vrai modèle.</p>
+  </div>
+
+  <div class="tests-grid reveal">
+    <div class="test-card">
+      <div class="test-num">66</div>
+      <div class="test-file">test_memory_tools.py</div>
+      <div class="test-desc">Briques bas niveau : sanitize, hash, parsing Markdown, sessions, freshness, importance</div>
+    </div>
+    <div class="test-card">
+      <div class="test-num">40</div>
+      <div class="test-file">test_retrieval.py</div>
+      <div class="test-desc">Retrieval hybride : RRF, cosine, FTS5, adaptive weights (30 offline + 10 @ollama)</div>
+    </div>
+    <div class="test-card">
+      <div class="test-num">25</div>
+      <div class="test-file">test_session_cycle.py</div>
+      <div class="test-desc">Cycle complet : crews mockés, sessions orphelines, scénarios bout en bout</div>
+    </div>
+    <div class="test-card" style="border-color:rgba(249,122,249,0.3);">
+      <div class="test-num" style="color:var(--a6);">89</div>
+      <div class="test-file" style="color:var(--a6);">test_ingest_tools.py ✦</div>
+      <div class="test-desc">Pipeline ingestion : chunking, hash, DB, PDF/DOCX/TXT/code source, dispatcher</div>
+    </div>
+  </div>
+
+  <div class="test-total reveal">
+    <div>
+      <div class="tt-label">Total</div>
+      <div class="tt-num">220 tests ✅</div>
+    </div>
+    <div class="tt-bar-wrap"><div class="tt-bar" style="width:100%"></div></div>
+    <div style="font-size:0.65rem; color:var(--muted);">0 fails · 0 flaky · pytest 9.0</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ ROADMAP ══ -->
+<section id="roadmap">
+  <div class="reveal">
+    <span class="section-label">Roadmap</span>
+    <h2 class="section-title">Où on en est.</h2>
+  </div>
+
+  <div class="roadmap-track reveal">
+    <div class="rm-phase rm-done">
+      <div class="rm-phase-num">0</div>
+      <span class="rm-status">✓ Complète</span>
+      <div class="rm-title">Fondations</div>
+      <ul class="rm-items">
+        <li class="done">Mémoire hybride FTS5 + vectoriel</li>
+        <li class="done">RRF · importance · freshness</li>
+        <li class="done">CTRL+C → finally → consolidation</li>
+        <li class="done">Unicode sanitize</li>
+        <li class="done">Ollama Docker · num_ctx 8192</li>
+      </ul>
+    </div>
+    <div class="rm-phase rm-done">
+      <div class="rm-phase-num">1</div>
+      <span class="rm-status">✓ Complète</span>
+      <div class="rm-title">Stabilisation</div>
+      <ul class="rm-items">
+        <li class="done">131 tests (niveaux 1, 2, 3)</li>
+        <li class="done">3 bugs corrigés</li>
+        <li class="done">Architecture validée</li>
+        <li class="done">Tests avant features</li>
+      </ul>
+    </div>
+    <div class="rm-phase rm-active">
+      <div class="rm-phase-num">2</div>
+      <span class="rm-status">◐ En cours</span>
+      <div class="rm-title">Perception</div>
+      <ul class="rm-items">
+        <li class="done">Ingestion PDF / DOCX / TXT / MD</li>
+        <li class="done">Ingestion code source (11 ext.)</li>
+        <li class="done">retrieve_all() · 89 tests</li>
+        <li class="wip">Conscience temporelle</li>
+        <li class="wip">Web occasionnel (SearXNG)</li>
+      </ul>
+    </div>
+    <div class="rm-phase rm-next">
+      <div class="rm-phase-num">3</div>
+      <span class="rm-status">⬜ Planifiée</span>
+      <div class="rm-title">Action</div>
+      <ul class="rm-items">
+        <li>Dashboard web local</li>
+        <li>Router pattern</li>
+        <li>Outils shell</li>
+        <li>Scheduler</li>
+      </ul>
+    </div>
+    <div class="rm-phase rm-next">
+      <div class="rm-phase-num">4</div>
+      <span class="rm-status">⬜ Planifiée</span>
+      <div class="rm-title">API et Interfaces externes</div>
+      <ul class="rm-items">
+        <li>REST API (FastAPI)</li>
+        <li>Local TTS / STT</li>
+        <li>Raspberry PI embedding</li>
+        <li>Unity Integration</li>
+      </ul>
+    </div>
+    <div class="rm-phase rm-next">
+      <div class="rm-phase-num">5</div>
+      <span class="rm-status">⬜ Planifiée</span>
+      <div class="rm-title">Proactivité</div>
+      <ul class="rm-items">
+        <li>suggestions contextualisés basé sur la date et la mémoire</li>
+        <li>détection de routines (patterns)</li>
+        <li>Plannications et alertes de deadlines</li>
+        <li>Compression de memory.md si jamais il deviens trop large</li>
+        <li>Multi-profiles pour différents contextes (travail / loisirs)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-logo">Mnemo</div>
+  <div class="footer-sub">Agent mémoire personnel · 100% local · 100% privé</div>
+  <div class="footer-stack">
+    <span class="fs-tag">CrewAI ≥ 0.130</span>
+    <span class="fs-tag">Ollama ≥ 0.4</span>
+    <span class="fs-tag">SQLite · FTS5</span>
+    <span class="fs-tag">nomic-embed-text · 768d</span>
+    <span class="fs-tag">pypdf</span>
+    <span class="fs-tag">python-docx</span>
+    <span class="fs-tag">numpy ≥ 1.26</span>
+    <span class="fs-tag">pytest 9.0</span>
+    <span class="fs-tag">Python 3.12</span>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
