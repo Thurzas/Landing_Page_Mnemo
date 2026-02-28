@@ -18,7 +18,7 @@
     <li><a href="#stockage">Stockage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
   </ul>
-  <span class="nav-badge">v4 · Phase 2 · 2026-02-26</span>
+  <span class="nav-badge">v4 · Phase 2 · 2026-02-27</span>
 </nav>
 
 <div class="hero">
@@ -35,13 +35,13 @@
   <p class="hero-sub">Mémoire hybride long terme, ingestion de documents, retrieval vectoriel et keyword — tout tourne localement, hors cloud, sans compromis sur la vie privée.</p>
   <div class="hero-ctas">
     <a href="#session" class="btn btn-primary"><span>Session du jour</span><span>↓</span></a>
-    <a href="#pipeline" class="btn btn-ghost">220 tests · 0 fails</a>
+    <a href="#pipeline" class="btn btn-ghost">388 tests · 0 fails</a>
   </div>
   <div class="hero-stats">
-    <div class="hstat"><span class="hstat-num">220</span><span class="hstat-label">Tests ✅</span></div>
+    <div class="hstat"><span class="hstat-num">388</span><span class="hstat-label">Tests ✅</span></div>
     <div class="hstat"><span class="hstat-num">8</span><span class="hstat-label">Tables SQLite</span></div>
     <div class="hstat"><span class="hstat-num">7</span><span class="hstat-label">Formats ingérés</span></div>
-    <div class="hstat"><span class="hstat-num">11</span><span class="hstat-label">Bugs réglés total</span></div>
+    <div class="hstat"><span class="hstat-num">13</span><span class="hstat-label">Bugs réglés total</span></div>
     <div class="hstat"><span class="hstat-num">100%</span><span class="hstat-label">Local · offline</span></div>
   </div>
 </div>
@@ -52,67 +52,67 @@
 <div class="session-section" id="session">
 <div>
   <div class="reveal">
-    <span class="section-label" style="color:var(--a6);">Session 2026-02-27</span>
-    <h2 class="section-title">Ce qu'on a réglé aujourd'hui.</h2>
-    <p class="section-desc">Recadrage sur la <code>CuriosityCrew</code>, fiabilisation du questionnaire, format d'écriture atomique/narratif, et nouveau template <code>memory.md</code> à auto-suggestion.</p>
+    <span class="section-label" style="color:var(--a6);">Session 2026-02-27 (suite)</span>
+    <h2 class="section-title">Conscience temporelle,<br>tests &amp; déduplication.</h2>
+    <p class="section-desc">Intégration calendrier ICS (local + Google), 168 nouveaux tests unitaires, 2 bugs détectés par les tests, upsert par label dans <code>update_markdown_section</code>, et raisonnement temporel passé/présent/futur dans le pipeline.</p>
   </div>
 
   <div class="session-grid reveal">
 
-    <div class="sess-card fix">
-      <span class="sess-badge">FIX · Import</span>
-      <div class="sess-title">GapDetectionCrew n'existait pas</div>
-      <div class="sess-cause"><code>main.py</code> importait <code>GapDetectionCrew</code> et <code>WriteAnswersCrew</code> — deux noms qui n'ont jamais existé dans <code>crew.py</code>. Résidu d'une version intermédiaire. Plantait immédiatement au démarrage.</div>
-      <div class="sess-fix">Remplacé par <code>CuriosityCrew</code> partout — import + appel <code>kickoff()</code></div>
+    <div class="sess-card feat">
+      <span class="sess-badge">FEATURE · Calendrier</span>
+      <div class="sess-title">calendar_tools.py — conscience temporelle</div>
+      <div class="sess-cause">L'agent ignorait complètement l'heure et les événements à venir. Aucune notion de date, impossible de répondre à "qu'est-ce que j'ai prévu ce soir" ou d'horodater les faits consolidés correctement.</div>
+      <div class="sess-fix">Nouveau module : parsing ICS local + URL (Google Calendar, Nextcloud), cache TTL, <code>get_temporal_context()</code> injecté dans les 3 tâches, <code>GetCalendarTool</code> CrewAI pour le retriever, bannière CLI au démarrage</div>
     </div>
 
     <div class="sess-card fix">
-      <span class="sess-badge">FIX · Logging</span>
-      <div class="sess-title">_TeeStream cassait input()</div>
-      <div class="sess-cause">Le wrapper <code>_TeeStream</code> sur <code>sys.stdout</code> retournait <code>isatty()=False</code> et n'avait pas de <code>fileno()</code>. Python basculait <code>input()</code> en mode non-interactif → <code>EOFError</code> silencieuse → questionnaire avorté sans rien écrire. 9000 lignes de log pour des tâches insignifiantes.</div>
-      <div class="sess-fix">Suppression complète du logging fichier et du _TeeStream — stdout propre</div>
+      <span class="sess-badge">FIX · Performance</span>
+      <div class="sess-title">Délais absurdes + "Maximum iterations reached"</div>
+      <div class="sess-cause"><code>max_iter</code> non défini → CrewAI utilisait 20 par défaut. LLM non spécifié sur les agents → tentative d'appel OpenAI → timeout → rebouclage jusqu'à épuisement. Chaque message prenait plusieurs minutes.</div>
+      <div class="sess-fix"><code>max_iter</code> par rôle (evaluator: 2, retriever: 4, main: 3, writer: 6), <code>LLM(model=MODEL)</code> explicite partout, <code>verbose=False</code> sur tous les agents</div>
     </div>
 
-    <div class="sess-card fix">
-      <span class="sess-badge">FIX · Écriture</span>
-      <div class="sess-title">update_markdown_section écrasait tout</div>
-      <div class="sess-cause">Chaque écriture remplaçait le bloc <code>###</code> entier par le nouveau contenu brut. "France" → tout le profil de base disparaissait, remplacé par "France".</div>
-      <div class="sess-fix">Logique d'enrichissement : si contenu existant réel → append. Si placeholder → remplace. <code>PLACEHOLDERS</code> = liste de marqueurs reconnus</div>
+    <div class="sess-card feat">
+      <span class="sess-badge">FEATURE · Tests</span>
+      <div class="sess-title">168 tests unitaires — curiosity &amp; calendrier</div>
+      <div class="sess-cause">La CuriosityCrew et le module calendrier n'avaient aucune couverture de tests. Bugs silencieux impossibles à détecter sans exécuter l'agent complet avec Ollama.</div>
+      <div class="sess-fix"><code>test_curiosity.py</code> : 79 tests (gaps, labels, écriture, skip, DB) · <code>test_calendar_tools.py</code> : 89 tests (datetime FR, ICS parsing, cache TTL, formatage). Zéro appel Ollama requis</div>
     </div>
 
     <div class="sess-card fix">
       <span class="sess-badge">FIX · Détection</span>
-      <div class="sess-title">Labels template = faux positifs</div>
-      <div class="sess-cause"><code>_detect_structural_gaps</code> cherchait les alias dans le contenu brut. <code>"- **Nom/Pseudo** : pas encore renseigné"</code> contient "nom" → champ considéré rempli → question jamais posée sur fichier vierge. Seulement 2 questions au lieu de 5.</div>
-      <div class="sess-fix"><code>_line_is_real_value()</code> : alias sur ligne placeholder → ignoré. Alias dans label <code>**</code> sans valeur après ":" → ignoré. 5 gaps correctement détectés</div>
+      <div class="sess-title">Header ### matchait comme alias réel</div>
+      <div class="sess-cause"><code>_extract_section_content()</code> retourne tout en lowercase y compris les headers <code>### préférences &amp; style</code>. L'alias <code>"style"</code> y était trouvé → <code>_line_is_real_value()</code> retournait True → champ "Style de communication" jamais détecté comme vide. Révélé par les tests.</div>
+      <div class="sess-fix"><code>_detect_structural_gaps</code> : skip explicite des lignes commençant par <code>#</code>. Les titres de sous-section ne sont plus analysés comme contenu</div>
     </div>
 
     <div class="sess-card fix">
-      <span class="sess-badge">FIX · Schéma</span>
-      <div class="sess-title">Question style en boucle infinie</div>
-      <div class="sess-cause">La clé <code>"préférences"</code> dans <code>MEMORY_SCHEMA</code> ne correspondait à aucun <code>##</code> dans le fichier. <code>section_content</code> toujours vide → gap toujours détecté → question reproposée à chaque session, même quand renseignée.</div>
-      <div class="sess-fix">Fusionné sous <code>"identité utilisateur"</code> — la seule vraie section <code>##</code> qui contient ces données</div>
-    </div>
-
-    <div class="sess-card fix">
-      <span class="sess-badge">FIX · YAML</span>
-      <div class="sess-title">{consolidated_facts} non résolu</div>
-      <div class="sess-cause">La variable <code>{consolidated_facts}</code> persistait dans <code>consolidation_tasks.yaml</code> sur la machine locale alors qu'elle avait été retirée de la version de référence. CrewAI levait <code>Missing required template variable</code> à chaque consolidation.</div>
-      <div class="sess-fix">YAML resynchronisé — le <code>write_task</code> lit le contexte de la tâche précédente nativement via <code>context=[consolidate_task()]</code></div>
+      <span class="sess-badge">FIX · Écriture</span>
+      <div class="sess-title">Merge écrasait les vraies valeurs</div>
+      <div class="sess-cause"><code>is_placeholder</code> était True dès qu'UNE ligne du bloc contenait un marqueur. <code>TEMPLATE_PARTIAL</code> avec "Matt" + deux lignes placeholder → tout le bloc remplacé → Matt disparaissait. Révélé par les tests.</div>
+      <div class="sess-fix">Filtrage ligne par ligne : <code>real_lines</code> = lignes sans marqueur placeholder. Merge = réelles conservées + nouveau contenu ajouté</div>
     </div>
 
     <div class="sess-card feat">
-      <span class="sess-badge">FEATURE · Labels</span>
-      <div class="sess-title">Format atomique propagé bout en bout</div>
-      <div class="sess-cause">Les réponses du questionnaire étaient écrites en texte brut, sans structure. "France" plutôt que "- <strong>Localisation</strong> : France". Pas de cohérence avec le template.</div>
-      <div class="sess-fix">Label ajouté dans chaque tuple MEMORY_SCHEMA → transporté dans les gaps → <code>_collect_answers</code> → écriture <code>- **Label** : valeur</code></div>
+      <span class="sess-badge">FEATURE · Upsert</span>
+      <div class="sess-title">Upsert par label dans update_markdown</div>
+      <div class="sess-cause"><code>memory.md</code> accumulait des doublons : "Matt", "Thurzas", "Utilisateur" sur trois lignes <code>**Nom/Pseudo**</code>. Chaque session consolidée ajoutait une nouvelle occurrence sans vérifier si le label existait déjà.</div>
+      <div class="sess-fix">Détection regex <code>- **Label** : valeur</code> → si label déjà présent : remplace. Si nouveau : appende. Narratif : déduplication exacte. Impossible d'avoir deux fois le même label</div>
     </div>
 
     <div class="sess-card arch">
-      <span class="sess-badge">DESIGN · Template</span>
-      <div class="sess-title">memory.md à auto-suggestion</div>
-      <div class="sess-cause">Les champs vides étaient muets. L'agent n'avait aucune indication sur ce qu'il devait chercher à compléter entre les sessions.</div>
-      <div class="sess-fix">Chaque champ vide contient une note d'intention : <em>"pas encore renseigné — je dois questionner l'utilisateur sur ce point."</em> Le fichier est à la fois mémoire et liste de tâches implicites</div>
+      <span class="sess-badge">DESIGN · Prompt</span>
+      <div class="sess-title">Règles anti-duplication dans la consolidation</div>
+      <div class="sess-cause">Le LLM hallucine des noms ("Thurzas", "Utilisateur") et réécrit des faits déjà présents (SQLite mentionné 2 fois). Double responsabilité : logique Python insuffisante + prompt trop permissif.</div>
+      <div class="sess-fix">5 règles explicites dans <code>consolidation_tasks.yaml</code> : ne pas réémettre un fait existant, ne pas inventer de noms non mentionnés, enrichir plutôt que dupliquer les sections narratives</div>
+    </div>
+
+    <div class="sess-card arch">
+      <span class="sess-badge">DESIGN · Temporel</span>
+      <div class="sess-title">Raisonnement passé / présent / futur</div>
+      <div class="sess-cause">L'agent confondait "hier" et "aujourd'hui" : répondait avec les événements du calendrier du jour courant pour une question sur la veille. Aucune distinction past/future dans le pipeline d'évaluation.</div>
+      <div class="sess-fix"><code>temporal_reference</code> (past|present|future|none) + <code>reference_date</code> ISO calculée dans <code>evaluate_task</code>. <code>get_yesterday_date_str()</code> dans le contexte temporel. Règles de source explicites dans <code>main_task</code></div>
     </div>
 
   </div>
@@ -461,6 +461,18 @@
         <div class="bug-cause">Clé <code>"préférences"</code> ne correspondait à aucun <code>##</code> dans le fichier → <code>section_content</code> toujours vide → gap toujours détecté → reproposé à chaque session.</div>
         <div class="bug-fix">Fusionné sous <code>"identité utilisateur"</code> — la vraie section parente dans le fichier</div>
       </div>
+      <div class="bug-card" style="border-color:rgba(247,183,49,0.15);">
+        <span class="bug-badge" style="background:rgba(247,183,49,0.15); border-color:rgba(247,183,49,0.3); color:var(--a3);">SESSION #12</span>
+        <div class="bug-title">Header ### matchait comme alias réel</div>
+        <div class="bug-cause"><code>_extract_section_content()</code> retourne tout en lowercase y compris <code>### préférences &amp; style</code>. L'alias <code>"style"</code> trouvé dans le titre → <code>_line_is_real_value()</code> → True → champ jamais détecté comme vide. Révélé par les tests unitaires.</div>
+        <div class="bug-fix">Skip explicite des lignes <code>#</code> dans <code>_detect_structural_gaps</code> — les titres de sous-section ne sont plus analysés</div>
+      </div>
+      <div class="bug-card" style="border-color:rgba(247,183,49,0.15);">
+        <span class="bug-badge" style="background:rgba(247,183,49,0.15); border-color:rgba(247,183,49,0.3); color:var(--a3);">SESSION #13</span>
+        <div class="bug-title">Merge écrasait les vraies valeurs</div>
+        <div class="bug-cause"><code>is_placeholder = True</code> si UNE ligne du bloc contient un marqueur. Profil avec "Matt" + deux placeholders → <code>merged = content</code> → Matt effacé silencieusement. Révélé par les tests unitaires.</div>
+        <div class="bug-fix">Filtrage ligne par ligne : <code>real_lines</code> = lignes sans marqueur. Merge = réelles + nouveau contenu. Valeurs existantes toujours préservées</div>
+      </div>
     </div>
   </section>
 </div>
@@ -472,7 +484,7 @@
 <section id="tests">
   <div class="reveal">
     <span class="section-label">Tests</span>
-    <h2 class="section-title">220 tests.<br>Zéro appel Ollama requis.</h2>
+    <h2 class="section-title">388 tests.<br>Zéro appel Ollama requis.</h2>
     <p class="section-desc">Chaque fichier est testable sans infrastructure externe grâce aux mocks. Le marqueur <code>@pytest.mark.ollama</code> isole les tests nécessitant le vrai modèle.</p>
   </div>
   <div class="tests-grid reveal">
@@ -496,9 +508,19 @@
       <div class="test-file" style="color:var(--a6);">test_ingest_tools.py ✦</div>
       <div class="test-desc">Pipeline ingestion : chunking, hash, DB, PDF/DOCX/TXT/code source, dispatcher</div>
     </div>
+    <div class="test-card" style="border-color:rgba(247,183,49,0.3);">
+      <div class="test-num" style="color:var(--a3);">79</div>
+      <div class="test-file" style="color:var(--a3);">test_curiosity.py ✦</div>
+      <div class="test-desc">CuriosityCrew : gaps structurels, _line_is_real_value, upsert label, skip DB, collect_answers mocké</div>
+    </div>
+    <div class="test-card" style="border-color:rgba(78,205,196,0.3);">
+      <div class="test-num" style="color:var(--a2);">89</div>
+      <div class="test-file" style="color:var(--a2);">test_calendar_tools.py ✦</div>
+      <div class="test-desc">Calendrier : datetime FR (7 jours × 12 mois), ICS parsing, cache TTL, fetch mock URL/local, formatage bannière</div>
+    </div>
   </div>
   <div class="test-total reveal">
-    <div><div class="tt-label">Total</div><div class="tt-num">220 tests ✅</div></div>
+    <div><div class="tt-label">Total</div><div class="tt-num">388 tests ✅</div></div>
     <div class="tt-bar-wrap"><div class="tt-bar" style="width:100%"></div></div>
     <div style="font-size:0.65rem; color:var(--muted);">0 fails · 0 flaky · pytest 9.0</div>
   </div>
@@ -547,7 +569,7 @@
         <li class="done">CuriosityCrew hybride Python+LLM</li>
         <li class="done">Format atomique / narratif</li>
         <li class="done">memory.md auto-suggestion</li>
-        <li class="wip">Conscience temporelle</li>
+        <li class="done">Conscience temporelle</li>
         <li class="wip">Web occasionnel (SearXNG)</li>
       </ul>
     </div>
@@ -592,7 +614,7 @@
 
 <footer>
   <div class="footer-logo">Mnemo</div>
-  <div class="footer-sub">Agent mémoire personnel · 100% local · 100% privé · session 2026-02-27</div>
+  <div class="footer-sub">Agent mémoire personnel · 100% local · 100% privé · session 2026-02-27 v4</div>
   <div class="footer-stack">
     <span class="fs-tag">CrewAI ≥ 0.130</span>
     <span class="fs-tag">Ollama ≥ 0.4</span>

@@ -306,7 +306,7 @@ section { padding:100px 40px; max-width:1100px; margin:0 auto; }
 .bug-fix::before { content:'→ '; }
 
 /* ══ TESTS ══ */
-.tests-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:50px; }
+.tests-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:50px; }
 .test-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:28px 20px; text-align:center; transition:transform 0.2s; }
 .test-card:hover { transform:translateY(-3px); }
 .test-num { font-family:'Syne', sans-serif; font-size:2.6rem; font-weight:800; color:var(--a5); line-height:1; margin-bottom:8px; }
@@ -366,4 +366,3 @@ footer { text-align:center; padding:60px 40px; border-top:1px solid var(--border
   .ing-card.retrieval { grid-column:span 1; }
   .bugs-grid, .session-grid { grid-template-columns:1fr; }
 }
-
