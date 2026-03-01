@@ -18,7 +18,7 @@
     <li><a href="#stockage">Stockage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
   </ul>
-  <span class="nav-badge">v4 · Phase 2 · 2026-02-27</span>
+  <span class="nav-badge">v6 · Phase 2 ✓ · 2026-03-01</span>
 </nav>
 
 <div class="hero">
@@ -35,14 +35,14 @@
   <p class="hero-sub">Mémoire hybride long terme, ingestion de documents, retrieval vectoriel et keyword — tout tourne localement, hors cloud, sans compromis sur la vie privée.</p>
   <div class="hero-ctas">
     <a href="#session" class="btn btn-primary"><span>Session du jour</span><span>↓</span></a>
-    <a href="#pipeline" class="btn btn-ghost">388 tests · 0 fails</a>
+    <a href="#pipeline" class="btn btn-ghost">470 tests · 0 fails</a>
   </div>
   <div class="hero-stats">
-    <div class="hstat"><span class="hstat-num">388</span><span class="hstat-label">Tests ✅</span></div>
+    <div class="hstat"><span class="hstat-num">470</span><span class="hstat-label">Tests ✅</span></div>
     <div class="hstat"><span class="hstat-num">8</span><span class="hstat-label">Tables SQLite</span></div>
     <div class="hstat"><span class="hstat-num">7</span><span class="hstat-label">Formats ingérés</span></div>
-    <div class="hstat"><span class="hstat-num">13</span><span class="hstat-label">Bugs réglés total</span></div>
-    <div class="hstat"><span class="hstat-num">100%</span><span class="hstat-label">Local · offline</span></div>
+    <div class="hstat"><span class="hstat-num">17</span><span class="hstat-label">Bugs réglés total</span></div>
+    <div class="hstat"><span class="hstat-num">100%</span><span class="hstat-label">Phase 2 ✓</span></div>
   </div>
 </div>
 
@@ -52,12 +52,56 @@
 <div class="session-section" id="session">
 <div>
   <div class="reveal">
-    <span class="section-label" style="color:var(--a6);">Session 2026-02-27 (suite)</span>
-    <h2 class="section-title">Conscience temporelle,<br>tests &amp; déduplication.</h2>
-    <p class="section-desc">Intégration calendrier ICS (local + Google), 168 nouveaux tests unitaires, 2 bugs détectés par les tests, upsert par label dans <code>update_markdown_section</code>, et raisonnement temporel passé/présent/futur dans le pipeline.</p>
+    <span class="section-label" style="color:var(--a6);">Session 2026-03-01 — Phase 2 complète</span>
+    <h2 class="section-title">Web occasionnel.<br>Phase 2 bouclée.</h2>
+    <p class="section-desc">Implémentation complète du web occasionnel : <code>WebSearchTool</code>, gardes-fous sécurité, confirmation utilisateur, <code>EvaluationCrew</code> séparée, SearXNG opérationnel, 82 tests unitaires. Phase 2 ✓</p>
   </div>
 
   <div class="session-grid reveal">
+
+    <div class="sess-card arch">
+      <span class="sess-badge">DESIGN · Déclenchement</span>
+      <div class="sess-title">Double déclenchement + EvaluationCrew séparée</div>
+      <div class="sess-cause">Le crew unique evaluate+retrieve+main rendait impossible toute interception entre l'évaluation et le retrieval. Impossible de confirmer la query web avant que le LLM ne parte chercher.</div>
+      <div class="sess-fix"><code>EvaluationCrew</code> séparée (config <code>evaluation_tasks.yaml</code>) + <code>ConversationCrew</code> pour retrieve+main. Interception propre dans <code>handle_message()</code> entre les deux kickoffs. <code>needs_web</code> + <code>web_query</code> dans le JSON évaluateur</div>
+    </div>
+
+    <div class="sess-card feat">
+      <span class="sess-badge">FEATURE · Sécurité</span>
+      <div class="sess-title">Confirmation utilisateur — query figée</div>
+      <div class="sess-cause">Sans garde-fou, le LLM pouvait déclencher des requêtes web avec des données personnelles, les rejouer plusieurs fois, ou modifier la query en cours de route.</div>
+      <div class="sess-fix"><code>_confirm_web_search()</code> dans <code>main.py</code> : affiche backend + query sanitisée avant envoi. Si refus → <code>needs_web=False</code> injecté, le LLM répond depuis la mémoire. Query figée au moment de l'évaluation — immuable ensuite</div>
+    </div>
+
+    <div class="sess-card feat">
+      <span class="sess-badge">FEATURE · web_tools.py</span>
+      <div class="sess-title">WebSearchTool — gardes-fous intégrés</div>
+      <div class="sess-cause">Un point d'entrée vers l'extérieur sans protection = risque de fuite PII, prompt injection via résultats, ou accès à des URLs internes forgées.</div>
+      <div class="sess-fix">Sanitisation query (email/IP/téléphone FR redactés, 200 chars max), blocklist URLs privées (RFC1918 + localhost + host.docker.internal), extraits tronqués à 400 chars marqués <code>[SOURCE WEB]</code>, audit log local de chaque requête</div>
+    </div>
+
+    <div class="sess-card fix">
+      <span class="sess-badge">FIX · DDG + Télémétrie</span>
+      <div class="sess-title">4 bugs post-déploiement corrigés</div>
+      <div class="sess-cause"><code>duckduckgo_search</code> renommé en <code>ddgs</code> → RuntimeWarning. <code>web_query</code> trop littérale → DDG cherchait "résumé" en chinois. <code>max_iter=5</code> trop juste pour 4 outils. CrewAI envoyait des traces vers <code>app.crewai.com</code>.</div>
+      <div class="sess-fix">Import <code>ddgs</code>, prompt <code>web_query</code> avec exemples anglais/techniques, <code>max_iter=8</code> sur le retriever, <code>OTEL_SDK_DISABLED=true</code> + <code>CREWAI_DISABLE_TELEMETRY=true</code> dans <code>.env</code></div>
+    </div>
+
+    <div class="sess-card arch">
+      <span class="sess-badge">DESIGN · Persistance</span>
+      <div class="sess-title">## Sources web dans memory.md</div>
+      <div class="sess-cause">Les faits web vieillissent — les stocker dans les mêmes sections que les faits personnels crée une confusion entre mémoire stable et snapshot daté potentiellement obsolète.</div>
+      <div class="sess-fix">Section dédiée <code>## Sources web</code> avec date d'acquisition et tag [potentiellement obsolète]. Faits distillés uniquement (pas d'extrait brut), consolidés via <code>memory_writer</code> avec flag <code>source=web</code></div>
+    </div>
+
+    <div class="sess-card feat">
+      <span class="sess-badge">FEATURE · Tests</span>
+      <div class="sess-title">82 tests — test_web_tools.py</div>
+      <div class="sess-cause">Module critique (point d'entrée externe) sans aucune couverture. Gardes-fous de sécurité non vérifiables sans tests automatisés.</div>
+      <div class="sess-fix">11 classes : sanitize PII, blocklist URLs privées, safe_extract, formatage prompt/mémoire, backends mockés (SearXNG + DDG), fallback, web_is_configured, audit log, robustesse réseau. Zéro appel réseau réel</div>
+    </div>
+
+  </div>
 
     <div class="sess-card feat">
       <span class="sess-badge">FEATURE · Calendrier</span>
@@ -106,13 +150,6 @@
       <div class="sess-title">Règles anti-duplication dans la consolidation</div>
       <div class="sess-cause">Le LLM hallucine des noms ("Thurzas", "Utilisateur") et réécrit des faits déjà présents (SQLite mentionné 2 fois). Double responsabilité : logique Python insuffisante + prompt trop permissif.</div>
       <div class="sess-fix">5 règles explicites dans <code>consolidation_tasks.yaml</code> : ne pas réémettre un fait existant, ne pas inventer de noms non mentionnés, enrichir plutôt que dupliquer les sections narratives</div>
-    </div>
-
-    <div class="sess-card arch">
-      <span class="sess-badge">DESIGN · Temporel</span>
-      <div class="sess-title">Raisonnement passé / présent / futur</div>
-      <div class="sess-cause">L'agent confondait "hier" et "aujourd'hui" : répondait avec les événements du calendrier du jour courant pour une question sur la veille. Aucune distinction past/future dans le pipeline d'évaluation.</div>
-      <div class="sess-fix"><code>temporal_reference</code> (past|present|future|none) + <code>reference_date</code> ISO calculée dans <code>evaluate_task</code>. <code>get_yesterday_date_str()</code> dans le contexte temporel. Règles de source explicites dans <code>main_task</code></div>
     </div>
 
   </div>
@@ -227,8 +264,8 @@
   <section id="pipeline" style="padding:0;">
     <div class="reveal">
       <span class="section-label">Architecture</span>
-      <h2 class="section-title">3 crews, un seul but.</h2>
-      <p class="section-desc">ConversationCrew pour chaque message, ConsolidationCrew en fin de session, CuriosityCrew pour combler les lacunes. Chaque agent a un rôle unique et un modèle adapté.</p>
+      <h2 class="section-title">4 crews, la croisée des mondes. Pour un seul but.</h2>
+      <p class="section-desc">ConversationCrew pour chaque message, ConsolidationCrew en fin de session, CuriosityCrew pour combler les lacunes, et L'EvaluationCrew pour permettre un meilleur contrôle des recherches web. Chaque agent a un rôle unique et un modèle adapté.</p>
     </div>
     <div class="pipeline-flow reveal">
       <div class="pf-step">
@@ -484,7 +521,7 @@
 <section id="tests">
   <div class="reveal">
     <span class="section-label">Tests</span>
-    <h2 class="section-title">388 tests.<br>Zéro appel Ollama requis.</h2>
+    <h2 class="section-title">470 tests.<br>Zéro appel Ollama requis.</h2>
     <p class="section-desc">Chaque fichier est testable sans infrastructure externe grâce aux mocks. Le marqueur <code>@pytest.mark.ollama</code> isole les tests nécessitant le vrai modèle.</p>
   </div>
   <div class="tests-grid reveal">
@@ -518,9 +555,14 @@
       <div class="test-file" style="color:var(--a2);">test_calendar_tools.py ✦</div>
       <div class="test-desc">Calendrier : datetime FR (7 jours × 12 mois), ICS parsing, cache TTL, fetch mock URL/local, formatage bannière</div>
     </div>
+    <div class="test-card" style="border-color:rgba(255,107,107,0.3);">
+      <div class="test-num" style="color:var(--a6);">82</div>
+      <div class="test-file" style="color:var(--a6);">test_web_tools.py ✦</div>
+      <div class="test-desc">Web : sanitize PII, blocklist URLs privées, safe_extract, SearXNG + DDG mockés, fallback, audit log, robustesse réseau</div>
+    </div>
   </div>
   <div class="test-total reveal">
-    <div><div class="tt-label">Total</div><div class="tt-num">388 tests ✅</div></div>
+    <div><div class="tt-label">Total</div><div class="tt-num">470 tests ✅</div></div>
     <div class="tt-bar-wrap"><div class="tt-bar" style="width:100%"></div></div>
     <div style="font-size:0.65rem; color:var(--muted);">0 fails · 0 flaky · pytest 9.0</div>
   </div>
@@ -552,15 +594,15 @@
       <span class="rm-status">✓ Complète</span>
       <div class="rm-title">Stabilisation</div>
       <ul class="rm-items">
-        <li class="done">220 tests (niveaux 1-4)</li>
+        <li class="done">470 tests (niveaux 1-4)</li>
         <li class="done">6 bugs corrigés</li>
         <li class="done">Architecture validée</li>
         <li class="done">Tests avant features</li>
       </ul>
     </div>
-    <div class="rm-phase rm-active">
+    <div class="rm-phase rm-done">
       <div class="rm-phase-num">2</div>
-      <span class="rm-status">◐ En cours</span>
+      <span class="rm-status">✓ Complète</span>
       <div class="rm-title">Perception & Mémoire</div>
       <ul class="rm-items">
         <li class="done">Ingestion PDF / DOCX / TXT / MD</li>
@@ -569,19 +611,23 @@
         <li class="done">CuriosityCrew hybride Python+LLM</li>
         <li class="done">Format atomique / narratif</li>
         <li class="done">memory.md auto-suggestion</li>
-        <li class="done">Conscience temporelle</li>
-        <li class="wip">Web occasionnel (SearXNG)</li>
+        <li class="done">Conscience temporelle + deadlines</li>
+        <li class="done">Web occasionnel (SearXNG + DDG)</li>
+        <li class="done">Docker · install.sh · requirements.txt</li>
       </ul>
     </div>
-    <div class="rm-phase rm-next">
+    <div class="rm-phase rm-active">
       <div class="rm-phase-num">3</div>
-      <span class="rm-status">⬜ Planifiée</span>
+      <span class="rm-status">◐ Prochaine</span>
       <div class="rm-title">Action</div>
       <ul class="rm-items">
-        <li>Dashboard web local</li>
+        <li>Dashboard web local (FastAPI)</li>
+        <li>Agenda CRUD via CalDAV</li>
+        <li>Outils shell (confirmation obligatoire)</li>
+        <li>Scheduler · morning briefing</li>
         <li>Router pattern</li>
-        <li>Outils shell</li>
-        <li>Scheduler</li>
+        <li>Chiffrement memory.db + memory.md</li>
+        <li>Durcissement accès (SSH, pas d'exposition internet)</li>
       </ul>
     </div>
     <div class="rm-phase rm-next">
@@ -614,7 +660,7 @@
 
 <footer>
   <div class="footer-logo">Mnemo</div>
-  <div class="footer-sub">Agent mémoire personnel · 100% local · 100% privé · session 2026-02-27 v4</div>
+  <div class="footer-sub">Agent mémoire personnel · 100% local · 100% privé · session 2026-03-01 v6 · Phase 2 ✓</div>
   <div class="footer-stack">
     <span class="fs-tag">CrewAI ≥ 0.130</span>
     <span class="fs-tag">Ollama ≥ 0.4</span>
@@ -625,6 +671,8 @@
     <span class="fs-tag">numpy ≥ 1.26</span>
     <span class="fs-tag">pytest 9.0</span>
     <span class="fs-tag">Python 3.12</span>
+    <span class="fs-tag">SearXNG · ddgs</span>
+    <span class="fs-tag">Docker Compose</span>
   </div>
 </footer>
 
