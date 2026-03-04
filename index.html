@@ -3,117 +3,250 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mnemo — Agent Mémoire Personnel</title>
+<title>Mnemo v9 — Agent Mémoire Personnel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
 <nav>
-  <span class="nav-logo">Mnemo</span>
+  <div class="nav-logo">Mnemo</div>
   <ul class="nav-links">
-    <li><a href="#session">Session</a></li>
-    <li><a href="#philosophy">Philosophie</a></li>
+    <li><a href="#scheduler">Scheduler</a></li>
+    <li><a href="#db">Base de données</a></li>
+    <li><a href="#session">Session v9</a></li>
     <li><a href="#pipeline">Pipeline</a></li>
-    <li><a href="#docker">Docker</a></li>
-    <li><a href="#stockage">Stockage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
   </ul>
-  <span class="nav-badge">v7.1 · Phase 3 ◐ · 2026-03-02</span>
+  <span class="nav-badge">v9 · Phase 3 ◐</span>
 </nav>
 
+<!-- HERO -->
 <div class="hero">
   <div class="hero-orbs">
     <div class="orb orb1"></div>
     <div class="orb orb2"></div>
     <div class="orb orb3"></div>
   </div>
-  <p class="hero-eyebrow">Agent mémoire personnel · CrewAI + SQLite + Ollama</p>
+  <div class="hero-eyebrow">Session 2026-03-04 — v9</div>
   <h1 class="hero-title">
-    <span class="line1">Un agent qui</span>
-    <span class="line2">tourne.</span>
+    <span class="line1">Mnemo</span>
+    <span class="line2">Scheduler.</span>
   </h1>
-  <p class="hero-sub">Docker opérationnel après 13 bugs de containerisation résolus. Router pattern déployé, LiteLLM stable, 502 tests verts. Phase 3 en cours — le ShellCrew peut être implémenté.</p>
-  <div class="hero-ctas">
-    <a href="#session" class="btn btn-primary"><span>Session du jour</span><span>↓</span></a>
-    <a href="#docker" class="btn btn-ghost">Docker durci ✓</a>
-  </div>
+  <p class="hero-sub">Morning briefing automatique. Rappels en langage naturel. Résumé hebdomadaire. Alertes deadlines J-1/J-3. Le premier agent Mnemo qui agit sans qu'on lui demande.</p>
   <div class="hero-stats">
-    <div class="hstat"><span class="hstat-num">502</span><span class="hstat-label">Tests ✅</span></div>
-    <div class="hstat"><span class="hstat-num">10</span><span class="hstat-label">Tables SQLite</span></div>
-    <div class="hstat"><span class="hstat-num">7</span><span class="hstat-label">Formats ingérés</span></div>
-    <div class="hstat"><span class="hstat-num">23</span><span class="hstat-label">Bugs réglés total</span></div>
-    <div class="hstat"><span class="hstat-num">◐</span><span class="hstat-label">Phase 3 active</span></div>
+    <div class="hstat"><span class="hstat-num">5</span><span class="hstat-label">bugs réglés</span></div>
+    <div class="hstat"><span class="hstat-num">11</span><span class="hstat-label">tables SQLite</span></div>
+    <div class="hstat"><span class="hstat-num">8</span><span class="hstat-label">crews actifs</span></div>
+    <div class="hstat"><span class="hstat-num">4</span><span class="hstat-label">outputs /data</span></div>
+    <div class="hstat"><span class="hstat-num">2</span><span class="hstat-label">services Docker</span></div>
   </div>
 </div>
 
 <div class="divider"></div>
 
-<!-- ══ SESSION DU JOUR ══ -->
+<!-- SCHEDULER ARCHITECTURE -->
+<div class="sched-section" id="scheduler">
+<div>
+  <div class="reveal">
+    <span class="section-label" style="color:var(--a2);">Phase 3 · Scheduler</span>
+    <h2 class="section-title">Agit pendant<br>que tu dors.</h2>
+    <p class="section-desc">Un service Docker séparé tourne en background. Boucle toutes les 60 secondes. Consomme <code>scheduled_tasks</code> depuis SQLite. Écrit dans <code>/data</code>.</p>
+  </div>
+
+  <div class="flow-diagram reveal">
+    <div class="flow-node">
+      <div class="flow-node-icon">💬</div>
+      <div class="flow-node-title">Conversation</div>
+      <div class="flow-node-desc">"rappelle-moi demain à 9h de..."</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-icon">🧠</div>
+      <div class="flow-node-title">SchedulerCrew</div>
+      <div class="flow-node-desc">Interprète, calcule trigger_at, crée la tâche</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-icon">🗄️</div>
+      <div class="flow-node-title">scheduled_tasks</div>
+      <div class="flow-node-desc">SQLite + mirror tasks.md</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-icon">⏱️</div>
+      <div class="flow-node-title">scheduler.py</div>
+      <div class="flow-node-desc">Boucle 60s, consomme les tâches dues</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-icon">📄</div>
+      <div class="flow-node-title">briefing.md</div>
+      <div class="flow-node-desc">+ weekly.md + tasks.md</div>
+    </div>
+  </div>
+
+  <div class="sched-grid reveal" style="margin-top:40px;">
+    <div class="sched-card system">
+      <span class="sched-badge">SYSTÈME · quotidien</span>
+      <div class="sched-title">🌅 Morning Briefing</div>
+      <div class="sched-desc">Déclenché chaque matin à <code>BRIEFING_TIME</code> (défaut 07:30). Compile le calendrier du jour, la dernière session et les points clés de <code>memory.md</code> en un document Markdown structuré.</div>
+      <div class="sched-code">→ /data/briefing.md<br>cron: daily 07:30</div>
+    </div>
+    <div class="sched-card system">
+      <span class="sched-badge">SYSTÈME · lundi</span>
+      <div class="sched-title">📆 Résumé Hebdomadaire</div>
+      <div class="sched-desc">Chaque lundi à <code>WEEKLY_TIME</code> (défaut 08:00). Compile les événements de la semaine passée, les sessions enregistrées et les projets actifs en mémoire.</div>
+      <div class="sched-code">→ /data/weekly.md<br>cron: weekly lundi 08:00</div>
+    </div>
+    <div class="sched-card system">
+      <span class="sched-badge">SYSTÈME · quotidien</span>
+      <div class="sched-title">⚠️ Alertes Deadlines</div>
+      <div class="sched-desc">Scan calendrier ICS à 07:00. Détecte les événements J-1 et J-3. Injecte un bloc <code>## ⚠️ Alertes deadlines</code> dans <code>briefing.md</code> si des alertes existent.</div>
+      <div class="sched-code">→ injecté dans briefing.md<br>cron: daily 07:00</div>
+    </div>
+    <div class="sched-card user">
+      <span class="sched-badge">UTILISATEUR · one-shot</span>
+      <div class="sched-title">🔔 Rappels one-shot</div>
+      <div class="sched-desc">"Rappelle-moi demain à 9h de relire mes notes." → SchedulerCrew calcule le <code>trigger_at</code> ISO depuis la date courante. Injecté dans <code>briefing.md</code> du jour J.</div>
+      <div class="sched-code">trigger_at: 2026-03-06T09:00:00<br>action: reminder</div>
+    </div>
+    <div class="sched-card user">
+      <span class="sched-badge">UTILISATEUR · récurrent</span>
+      <div class="sched-title">🔁 Tâches récurrentes</div>
+      <div class="sched-desc">"Chaque lundi, génère un résumé de mes projets." → <code>cron_expr = "weekly lundi 08:00"</code>. Après exécution, <code>reschedule()</code> calcule automatiquement le prochain <code>next_run</code>.</div>
+      <div class="sched-code">cron: weekly lundi 08:00<br>reschedule() après chaque run</div>
+    </div>
+    <div class="sched-card output">
+      <span class="sched-badge">SORTIE · /data</span>
+      <div class="sched-title">📋 tasks.md — miroir humain</div>
+      <div class="sched-desc">Miroir lisible de <code>scheduled_tasks</code>. Mis à jour à chaque create/cancel/reschedule. Sections Système / Récurrentes / One-shot. Icônes <code>[ ]</code> <code>[x]</code> <code>[↻]</code> <code>[!]</code>.</div>
+      <div class="sched-code">→ /data/tasks.md<br>sync à chaque write DB</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- DB TABLE scheduled_tasks -->
+<div class="db-section" id="db">
+<div>
+  <div class="reveal">
+    <span class="section-label">Base de données · v9</span>
+    <h2 class="section-title">11 tables.<br>1 ajoutée cette session.</h2>
+    <p class="section-desc"><code>scheduled_tasks</code> complète le schéma existant. Gère les tâches système permanentes, les rappels one-shot utilisateur et les tâches récurrentes avec calcul automatique de <code>next_run</code>.</p>
+  </div>
+  <div class="db-tables reveal">
+    <div class="db-table">
+      <div class="db-table-header">
+        <span class="db-table-name">scheduled_tasks</span>
+        <span class="db-table-badge new">NEW · v9</span>
+      </div>
+      <div class="db-col"><span class="db-col-name">id</span><span class="db-col-type">TEXT PK</span><span class="db-col-desc">Hash court — sys_briefing, sys_weekly, usr_a3f7…</span></div>
+      <div class="db-col"><span class="db-col-name">type</span><span class="db-col-type">TEXT</span><span class="db-col-desc">one_shot | recurring | system</span></div>
+      <div class="db-col"><span class="db-col-name">action</span><span class="db-col-type">TEXT</span><span class="db-col-desc">briefing | weekly | deadline_alert | reminder | summary</span></div>
+      <div class="db-col"><span class="db-col-name">payload</span><span class="db-col-type">TEXT JSON</span><span class="db-col-desc">{"message": "texte du rappel"} — paramètres libres</span></div>
+      <div class="db-col"><span class="db-col-name">trigger_at</span><span class="db-col-type">DATETIME</span><span class="db-col-desc">one_shot : datetime ISO d'exécution unique</span></div>
+      <div class="db-col"><span class="db-col-name">cron_expr</span><span class="db-col-type">TEXT</span><span class="db-col-desc">"daily 07:30" | "weekly lundi 08:00"</span></div>
+      <div class="db-col"><span class="db-col-name">status</span><span class="db-col-type">TEXT</span><span class="db-col-desc">pending | done | cancelled | error</span></div>
+      <div class="db-col"><span class="db-col-name">next_run</span><span class="db-col-type">DATETIME</span><span class="db-col-desc">Précalculé par compute_next_run() après chaque reschedule</span></div>
+      <div class="db-col"><span class="db-col-name">last_run</span><span class="db-col-type">DATETIME</span><span class="db-col-desc">Horodatage de la dernière exécution</span></div>
+      <div class="db-col"><span class="db-col-name">error_msg</span><span class="db-col-type">TEXT</span><span class="db-col-desc">Dernier message d'erreur si status = error</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">
+        <span class="db-table-name">Tables existantes</span>
+        <span class="db-table-badge">10 tables · inchangées</span>
+      </div>
+      <div class="db-col"><span class="db-col-name">chunks</span><span class="db-col-type">mémoire</span><span class="db-col-desc">Chunks mémoire personnelle — importance_weight, category</span></div>
+      <div class="db-col"><span class="db-col-name">embeddings</span><span class="db-col-type">mémoire</span><span class="db-col-desc">Vecteurs 768d float32 (nomic-embed-text)</span></div>
+      <div class="db-col"><span class="db-col-name">chunks_fts</span><span class="db-col-type">mémoire</span><span class="db-col-desc">Index FTS5 full-text — unicode61</span></div>
+      <div class="db-col"><span class="db-col-name">sessions / session_facts</span><span class="db-col-type">sessions</span><span class="db-col-desc">Historique des sessions + faits extraits</span></div>
+      <div class="db-col"><span class="db-col-name">file_state</span><span class="db-col-type">sync</span><span class="db-col-desc">Détection des éditions manuelles de memory.md</span></div>
+      <div class="db-col"><span class="db-col-name">documents / doc_chunks</span><span class="db-col-type">docs</span><span class="db-col-desc">PDF, DOCX, TXT, code — ingestion Phase 2</span></div>
+      <div class="db-col"><span class="db-col-name">doc_embeddings / doc_chunks_fts</span><span class="db-col-type">docs</span><span class="db-col-desc">Vectoriel + FTS5 sur les documents ingérés</span></div>
+      <div class="db-col"><span class="db-col-name">curiosity_skipped</span><span class="db-col-type">curiosity</span><span class="db-col-desc">Questions CuriosityCrew refusées — ne plus reproposer</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- BUGS SESSION v9 -->
 <div class="session-section" id="session">
 <div>
   <div class="reveal">
-    <span class="section-label" style="color:var(--a6);">Session 2026-03-02 — Docker opérationnel</span>
-    <h2 class="section-title">Router pattern.<br>Docker en production.</h2>
-    <p class="section-desc">Architecture de dispatch implémentée, Docker durci et opérationnel après 13 bugs de containerisation. LiteLLM stable, agent en production locale. Phase 3 : le ShellCrew peut être construit sur des fondations solides.</p>
+    <span class="section-label">Session v9 · 4 mars 2026</span>
+    <h2 class="section-title">5 bugs réglés.<br>Scheduler complet.</h2>
+    <p class="section-desc">Calendrier RRULE, temporal reasoning, pre-fetch calendrier, scheduling système + utilisateur — et tous les chemins read-only corrigés.</p>
   </div>
 
   <div class="session-grid reveal">
 
-    <div class="sess-card arch">
-      <span class="sess-badge">DESIGN · Router pattern</span>
-      <div class="sess-title">_route_message — 4 routes, dispatch propre</div>
-      <div class="sess-cause">Le pipeline linéaire evaluate→retrieve→main ne permet pas d'isoler les crews d'action (shell, calendar). Un ShellCrew avec accès aux outils mémoire = risque de fuite croisée.</div>
-      <div class="sess-fix"><code>_route_message(eval_json, …)</code> dispatche selon <code>route</code> : "conversation" (défaut silencieux), "shell", "calendar", "scheduler". <code>web_context</code> injecté dans tous les crews. Route inconnue → conversation sans exception</div>
-    </div>
-
-    <div class="sess-card arch">
-      <span class="sess-badge">DESIGN · EvaluationCrew</span>
-      <div class="sess-title">Champ route + règles de déclenchement</div>
-      <div class="sess-cause">L'évaluateur doit distinguer lecture calendrier (→ conversation) et écriture (→ calendar), commande explicite (→ shell) et "montre-moi comment faire" (→ conversation).</div>
-      <div class="sess-fix">4 valeurs dans <code>evaluation_tasks.yaml</code> : règles précises, exemples, règle explicite lecture≠écriture calendrier, fallback "conversation" en cas de doute</div>
-    </div>
-
-    <div class="sess-card feat">
-      <span class="sess-badge">FEATURE · Stubs Phase 3</span>
-      <div class="sess-title">ShellCrew · CalendarWriteCrew · SchedulerCrew</div>
-      <div class="sess-cause">ImportError garanti si le router tente de dispatch vers un crew non déclaré. Les stubs permettent de tester le router sans implémenter les crews.</div>
-      <div class="sess-fix">3 classes stub dans <code>crew.py</code> avec <code>.run(inputs)</code> → message "non encore implémenté". Compartimentalisation garantie : chaque crew n'aura accès qu'à ses propres outils</div>
-    </div>
-
-    <div class="sess-card feat">
-      <span class="sess-badge">FEATURE · Tests</span>
-      <div class="sess-title">32 tests — test_router.py</div>
-      <div class="sess-cause">Le router est un nœud critique — une régression silencieuse enverrait tous les messages vers le mauvais crew sans aucun signal d'erreur visible.</div>
-      <div class="sess-fix">4 classes : <code>TestParseEvalJson</code> (JSON bruité, trailing text), <code>TestRouteMessage</code> (4 routes + fallback + web_context), <code>TestPhase3Stubs</code>, <code>TestHandleMessage</code> (pipeline bout en bout mocké)</div>
-    </div>
-
-    <div class="sess-card docker">
-      <span class="sess-badge">DOCKER · Durcissement</span>
-      <div class="sess-title">cap_drop · read_only · non-root · réseau isolé</div>
-      <div class="sess-cause">Un ShellCrew sans cloisonnement = une commande confirmée par erreur peut toucher la machine hôte. L'isolation doit être garantie avant d'implémenter les outils shell.</div>
-      <div class="sess-fix"><code>cap_drop: ALL</code> + <code>no-new-privileges</code> + <code>read_only: true</code> + <code>user: 1000:1000</code> + limits RAM/CPU. Réseau dual : <code>mnemo_internal</code> (SearXNG isolé) + <code>mnemo_external</code> (Ollama via host-gateway)</div>
-    </div>
-
-    <div class="sess-card feat">
-      <span class="sess-badge">FEATURE · shell_whitelist.py</span>
-      <div class="sess-title">Whitelist de commandes pour ShellCrew</div>
-      <div class="sess-cause">Sans whitelist explicite, le LLM pourrait proposer n'importe quelle commande. La confirmation utilisateur seule ne suffit pas si la commande est formulée de façon trompeuse.</div>
-      <div class="sess-fix">3 familles : fichiers <code>/data</code>, lecture système, scripts Python dans <code>/data</code>. Blacklist explicite (bash, curl, sudo, pip). Validation path traversal, flags <code>rm -rf</code> interdits, sortie tronquée à 50 KB</div>
-    </div>
-
-    <div class="sess-card docker">
-      <span class="sess-badge">FIX · LiteLLM</span>
-      <div class="sess-title">LiteLLM résolu — provider ollama/ natif</div>
-      <div class="sess-cause">13 tentatives pour stabiliser LiteLLM : venv uv vide, conflit de versions, provider <code>openai/</code> mal routé, venv inexistant dans l'image. L'erreur "Fallback to LiteLLM is not available" persistait malgré les installs.</div>
-      <div class="sess-fix">Retour au pip système sans venv. <code>litellm</code> déclaré explicitement dans requirements.txt. <code>crew.py</code> restauré avec <code>ollama/model + base_url</code> — format natif que litellm comprend une fois proprement installé</div>
+    <div class="sess-card fix">
+      <span class="sess-badge">BUG #43 · ICS</span>
+      <div class="sess-title">Récurrences ICS ignorées — 2 événements au lieu de 20</div>
+      <div class="sess-cause"><code>get_upcoming_events()</code> lisait <code>DTSTART</code> brut. Les événements récurrents (<code>RRULE:FREQ=WEEKLY;BYDAY=TH</code>) avaient un <code>DTSTART</code> en septembre 2025 — jamais dans la fenêtre "aujourd'hui+14j".</div>
+      <div class="sess-fix">Expansion RRULE manuelle native — FREQ=WEEKLY/DAILY, BYDAY, UNTIL, COUNT, EXDATE. Fallback <code>recurring_ical_events</code> si disponible. Déduplication via (uid, date).</div>
     </div>
 
     <div class="sess-card fix">
-      <span class="sess-badge">FIX · Config</span>
-      <div class="sess-title">3 fixes config de fin de session</div>
-      <div class="sess-cause"><code>{label}</code> dans <code>curiosity_tasks.yaml</code> interprété comme variable de template CrewAI → crash à chaque écriture. <code>install.sh</code> sans <code>-f</code> → compose ne trouvait pas le fichier. Traces CrewAI interactives parasitaient le terminal.</div>
-      <div class="sess-fix"><code>{{label}}</code> échappé dans le YAML. <code>COMPOSE_FILE</code> + <code>-f</code> dans <code>install.sh</code>. <code>CREWAI_TRACING_ENABLED=false</code> dans <code>.env</code> + <code>Dockerfile</code></div>
+      <span class="sess-badge">BUG #44-45 · Banner</span>
+      <div class="sess-title">Bannière et greeting affichaient 3 jours d'événements</div>
+      <div class="sess-cause"><code>format_startup_banner()</code> affichait les événements passés + 14 jours futurs. Le greeting du matin listait tous les événements des 3 prochains jours.</div>
+      <div class="sess-fix">Banner → <code>days_until == 0</code> uniquement. Greeting → aujourd'hui + demain uniquement, suppression du bloc <code>urgent_soon</code>.</div>
+    </div>
+
+    <div class="sess-card fix">
+      <span class="sess-badge">BUG #46 · Temporal</span>
+      <div class="sess-title">LLM ne comprenait pas "prochaine session après aujourd'hui"</div>
+      <div class="sess-cause"><code>format_events_for_prompt()</code> affichait <code>[Dans 2 jours]</code> sans date ISO. Le LLM ne pouvait pas calculer "la prochaine occurrence après aujourd'hui".</div>
+      <div class="sess-fix">Format enrichi : <code>2026-03-06 (jeudi)</code>. Instructions explicites dans <code>conversation_tasks.yaml</code> : "pour prochaine session X, chercher première occurrence dont date &gt; aujourd'hui".</div>
+    </div>
+
+    <div class="sess-card fix">
+      <span class="sess-badge">BUG #47 · Iterator</span>
+      <div class="sess-title">"Maximum iterations reached" sur toutes les questions calendrier</div>
+      <div class="sess-cause"><code>memory_retriever</code> (max_iter=8) recevait <code>needs_calendar: true</code> → appelait <code>GetCalendarTool</code> → reformatait JSON → retry → explosion avant toute réponse.</div>
+      <div class="sess-fix">Pré-fetch calendrier dans <code>main.py</code> avant le kickoff CrewAI. <code>calendar_context</code> injecté directement dans <code>base_inputs</code>. Instruction "n'appelle PAS get_calendar_events" dans le task YAML.</div>
+    </div>
+
+    <div class="sess-card fix">
+      <span class="sess-badge">BUG #48 · Read-only FS</span>
+      <div class="sess-title">uncertain_cases.jsonl écrit dans /app — filesystem read-only</div>
+      <div class="sess-cause"><code>_UNCERTAIN_LOG = Path(__file__).parent / "uncertain_cases.jsonl"</code> pointait vers <code>/app/src/Mnemo/</code> — monté read-only dans Docker. Même problème pour <code>router_model.joblib</code>, <code>training_data.jsonl</code>.</div>
+      <div class="sess-fix">Tous les fichiers de données redirigés vers <code>Path("...").resolve()</code> relatif à WORKDIR <code>/data</code>. <code>router_model.joblib</code> : cherche d'abord dans <code>/data</code>, fallback <code>/app</code>.</div>
+    </div>
+
+    <div class="sess-card feat">
+      <span class="sess-badge">FEAT · Scheduler</span>
+      <div class="sess-title">Service scheduler complet — 4 actions, boucle 60s</div>
+      <div class="sess-cause">Aucun service de planification n'existait. Les tâches différées ("rappelle-moi demain") n'étaient pas possibles.</div>
+      <div class="sess-fix"><code>scheduler.py</code> service Docker séparé. <code>tools/scheduler_tasks.py</code> : CRUD SQLite + <code>compute_next_run()</code> + mirror <code>tasks.md</code> + <code>bootstrap_system_tasks()</code>. Actions : briefing / weekly / deadline_alert / reminder.</div>
+    </div>
+
+    <div class="sess-card feat">
+      <span class="sess-badge">FEAT · SchedulerCrew</span>
+      <div class="sess-title">SchedulerCrew — du langage naturel à la DB</div>
+      <div class="sess-cause">Le stub <code>SchedulerCrew</code> retournait "non implémenté". Impossible de créer des rappels depuis la conversation.</div>
+      <div class="sess-fix">Agent dédié + prompt structuré : détecte one_shot/recurring, calcule trigger_at ou cron_expr, parse le JSON de retour, appelle <code>create_task()</code> ou <code>cancel_task()</code>, retourne une confirmation en français naturel.</div>
+    </div>
+
+    <div class="sess-card arch">
+      <span class="sess-badge">ARCH · Routing</span>
+      <div class="sess-title">Détection scheduler — 20 keywords + arbitrage post-LLM</div>
+      <div class="sess-cause">Les messages type "rappelle-moi demain" étaient routés vers <code>conversation</code> — le LLM répondait mais ne créait aucune tâche.</div>
+      <div class="sess-fix"><code>_detect_scheduler_intent()</code> : 20 keywords (rappelle-moi, planifie, chaque lundi…). Arbitrage post-LLM : si LLM dit conversation et keywords détectent scheduler → correction. Seuil ML 0.75 vs 0.92 pour shell.</div>
+    </div>
+
+    <div class="sess-card feat">
+      <span class="sess-badge">FEAT · DX</span>
+      <div class="sess-title">mnemo.sh — raccourci de lancement</div>
+      <div class="sess-cause">Lancer Mnemo nécessitait de mémoriser les commandes <code>docker compose run --rm</code>. Friction à chaque session.</div>
+      <div class="sess-fix"><code>mnemo.sh</code> à la racine. Commandes : run / scheduler / stop / briefing / weekly / deadline / logs / ingest / status / help. Tip WSL2 : alias <code>mnemo</code> généré dans <code>install.sh</code>.</div>
     </div>
 
   </div>
@@ -122,292 +255,178 @@
 
 <div class="divider"></div>
 
-<!-- ══ PHILOSOPHIE ══ -->
-<section id="philosophy">
+<!-- FICHIERS MODIFIÉS -->
+<section>
   <div class="reveal">
-    <span class="section-label">Philosophie</span>
-    <h2 class="section-title">Conçu pour durer.<br>Pas pour impressionner.</h2>
-    <p class="section-desc">Chaque décision d'architecture a été prise pour la robustesse à long terme : mémoire éditable manuellement, zéro vendor lock-in, tests avant features, sécurité avant fonctionnalité.</p>
+    <span class="section-label">Livrables · Session v9</span>
+    <h2 class="section-title">14 fichiers.<br>6 nouveaux.</h2>
   </div>
-  <div class="philosophy-grid reveal">
-    <div class="phil-card">
-      <div class="phil-icon">📄</div>
-      <div class="phil-title">memory.md comme source de vérité</div>
-      <div class="phil-desc">La mémoire reste un fichier Markdown lisible et éditable humainement. Versionnable avec git. SQLite est un index — pas la source. Les champs vides contiennent des notes d'intention pour l'agent.</div>
+  <div class="files-grid reveal">
+    <div class="file-card">
+      <div class="file-name">scheduler.py</div>
+      <div class="file-desc">Boucle 60s, 4 actions (briefing/weekly/deadline/reminder), dispatch depuis DB, déclenchement manuel --now.</div>
+      <span class="file-tag new">NEW</span>
     </div>
-    <div class="phil-card">
-      <div class="phil-icon">🔒</div>
-      <div class="phil-title">100% local, 100% privé</div>
-      <div class="phil-desc">Ollama en Docker, SQLite sur disque, aucun appel vers un service externe. Télémétrie CrewAI désactivée. Ce qui est dit à Mnemo reste sur la machine.</div>
+    <div class="file-card">
+      <div class="file-name">tools/scheduler_tasks.py</div>
+      <div class="file-desc">CRUD scheduled_tasks, compute_next_run(), bootstrap_system_tasks(), mirror tasks.md.</div>
+      <span class="file-tag new">NEW</span>
     </div>
-    <div class="phil-card">
-      <div class="phil-icon">🧪</div>
-      <div class="phil-title">Python avant LLM</div>
-      <div class="phil-desc">Réduire la surface LLM. La détection de gaps, la validation de commandes shell, les gardes-fous réseau — tout ce qui peut être fait en Python pur ne passe plus par un agent. Moins d'hallucinations, résultat garanti.</div>
+    <div class="file-card">
+      <div class="file-name">Dockerfile.scheduler</div>
+      <div class="file-desc">Image dédiée scheduler — même sécurité que mnemo : non-root, read-only, cap_drop: ALL.</div>
+      <span class="file-tag new">NEW</span>
     </div>
-    <div class="phil-card">
-      <div class="phil-icon">🧠</div>
-      <div class="phil-title">Mémoire ≠ base de données</div>
-      <div class="phil-desc">La mémoire personnelle et les documents ingérés sont séparés physiquement mais fusionnés dans le retrieval — pour que l'agent sache toujours d'où vient chaque information.</div>
+    <div class="file-card">
+      <div class="file-name">config/briefing_agents.yaml<br>config/briefing_tasks.yaml</div>
+      <div class="file-desc">Agent morning briefing — 3 sections fixes, règles strictes anti-répétition, anti-fences.</div>
+      <span class="file-tag new">NEW</span>
     </div>
-    <div class="phil-card">
-      <div class="phil-icon">🛡️</div>
-      <div class="phil-title">Sécurité avant fonctionnalité</div>
-      <div class="phil-desc">Le ShellCrew n'existera pas avant que le conteneur soit blindé. Whitelist avant implémentation. Confirmation utilisateur sur query figée avant envoi réseau. La surface d'attaque se rétrécit à chaque phase.</div>
+    <div class="file-card">
+      <div class="file-name">config/scheduler_agents.yaml<br>config/scheduler_tasks_config.yaml</div>
+      <div class="file-desc">Agent planification — détecte one_shot/recurring, calcule trigger_at/cron_expr, gère les annulations.</div>
+      <span class="file-tag new">NEW</span>
+    </div>
+    <div class="file-card">
+      <div class="file-name">mnemo.sh</div>
+      <div class="file-desc">Raccourci CLI : run / scheduler / stop / briefing / weekly / deadline / logs / ingest / status.</div>
+      <span class="file-tag new">NEW</span>
+    </div>
+    <div class="file-card">
+      <div class="file-name">crew.py</div>
+      <div class="file-desc">BriefingCrew + SchedulerCrew implémentés (plus de stubs). 8 crews actifs.</div>
+      <span class="file-tag mod">MODIFIÉ</span>
+    </div>
+    <div class="file-card">
+      <div class="file-name">main.py</div>
+      <div class="file-desc">Pré-fetch calendrier, _detect_scheduler_intent(), arbitrage routing, _show_briefing_if_fresh(), chemins /data.</div>
+      <span class="file-tag mod">MODIFIÉ</span>
+    </div>
+    <div class="file-card">
+      <div class="file-name">tools/calendar_tools.py</div>
+      <div class="file-desc">_expand_rrule() RRULE natif, format_events_for_prompt() avec dates ISO + jour FR.</div>
+      <span class="file-tag mod">MODIFIÉ</span>
+    </div>
+    <div class="file-card">
+      <div class="file-name">init_db.py</div>
+      <div class="file-desc">Table scheduled_tasks ajoutée dans CREATE et migrate_db().</div>
+      <span class="file-tag mod">MODIFIÉ</span>
+    </div>
+    <div class="file-card">
+      <div class="file-name">docker-compose.yml</div>
+      <div class="file-desc">Service mnemo-scheduler ajouté — volume /data partagé, restart: on-failure:3, DATA_PATH=/data forcé.</div>
+      <span class="file-tag mod">MODIFIÉ</span>
+    </div>
+    <div class="file-card">
+      <div class="file-name">retrain_router.py<br>train_router.py<br>generate_training_data.py</div>
+      <div class="file-desc">Tous les chemins de données redirigés vers DATA_PATH (/data) — plus d'écriture dans /app read-only.</div>
+      <span class="file-tag mod">MODIFIÉ</span>
     </div>
   </div>
 </section>
 
 <div class="divider"></div>
 
-<!-- ══ PIPELINE ══ -->
-<div class="pipeline-section">
+<!-- PIPELINE -->
+<div class="pipeline-section" id="pipeline">
 <div>
-  <section id="pipeline" style="padding:0;">
-    <div class="reveal">
-      <span class="section-label">Architecture</span>
-      <h2 class="section-title">6 crews, une seule intention.</h2>
-      <p class="section-desc">EvaluationCrew produit le JSON + la route. Le router dispatche vers le crew approprié avec isolation stricte des outils. Chaque crew vit dans sa propre bulle de permissions.</p>
+  <div class="reveal">
+    <span class="section-label">Architecture · Pipeline v9</span>
+    <h2 class="section-title">8 crews.<br>2 services Docker.</h2>
+  </div>
+  <div class="pipeline-flow reveal">
+    <div class="pf-step">
+      <div class="pf-num">01</div>
+      <div class="pf-title">Keywords + ML</div>
+      <div class="pf-desc">Pré-check déterministe avant LLM. Shell (whitelist), Scheduler (20 keywords), ML (TF-IDF+LR).</div>
+      <div class="pf-tags"><span class="pf-tag">0 LLM</span><span class="pf-tag">Python pur</span></div>
     </div>
-    <div class="pipeline-flow reveal">
-      <div class="pf-step">
-        <div class="pf-num">01</div>
-        <div class="pf-title">Évaluateur</div>
-        <div class="pf-desc">Analyse le message. Produit JSON structuré avec <code>route</code>, <code>needs_web</code>, <code>needs_calendar</code>, références temporelles.</div>
-        <div class="pf-tags"><span class="pf-tag">intent</span><span class="pf-tag">route</span><span class="pf-tag">needs_memory</span></div>
-        <div style="margin-top:12px;font-size:0.56rem;color:var(--muted);">⚙ léger · rapide</div>
-      </div>
-      <div class="pf-step">
-        <div class="pf-num">02</div>
-        <div class="pf-title">Router</div>
-        <div class="pf-desc">Dispatche selon <code>route</code>. Web search injecté avant action si <code>needs_web</code>. Fallback silencieux vers conversation.</div>
-        <div class="pf-tags"><span class="pf-tag">conversation</span><span class="pf-tag">shell</span><span class="pf-tag">calendar</span><span class="pf-tag">scheduler</span></div>
-        <div style="margin-top:12px;font-size:0.56rem;color:var(--muted);">⚙ Python pur · 0 LLM</div>
-      </div>
-      <div class="pf-step">
-        <div class="pf-num">03</div>
-        <div class="pf-title">Memory Retriever</div>
-        <div class="pf-desc">Construit le contexte via <code>retrieve_all()</code> — mémoire personnelle ET documents ingérés fusionnés par RRF.</div>
-        <div class="pf-tags"><span class="pf-tag">🧠 mémoire</span><span class="pf-tag">📄 documents</span></div>
-        <div style="margin-top:12px;font-size:0.56rem;color:var(--muted);">⚙ tools</div>
-      </div>
-      <div class="pf-step">
-        <div class="pf-num">04</div>
-        <div class="pf-title">Agent Principal</div>
-        <div class="pf-desc">Seul agent qui parle à l'utilisateur. Reçoit message + contexte enrichi. Aucun accès aux outils shell.</div>
-        <div class="pf-tags"><span class="pf-tag">réponse finale</span></div>
-        <div style="margin-top:12px;font-size:0.56rem;color:var(--muted);">⚙ qualité max</div>
-      </div>
-      <div class="pf-step">
-        <div class="pf-num">05</div>
-        <div class="pf-title">Consolidateur</div>
-        <div class="pf-desc">En fin de session, extrait les faits. Format atomique ou narratif selon la section cible. Upsert par label.</div>
-        <div class="pf-tags"><span class="pf-tag">facts[]</span><span class="pf-tag">format prescrit</span></div>
-        <div style="margin-top:12px;font-size:0.56rem;color:var(--muted);">⚙ raisonnement</div>
-      </div>
-      <div class="pf-step">
-        <div class="pf-num">06</div>
-        <div class="pf-title">CuriosityCrew</div>
-        <div class="pf-desc">Python détecte les gaps (5/5 garanti). LLM détecte les gaps contextuels. Questionnaire CLI collecte les réponses.</div>
-        <div class="pf-tags"><span class="pf-tag">structural</span><span class="pf-tag">contextual</span></div>
-        <div style="margin-top:12px;font-size:0.56rem;color:var(--muted);">⚙ hybrid Python+LLM</div>
-      </div>
+    <div class="pf-step">
+      <div class="pf-num">02</div>
+      <div class="pf-title">Évaluateur</div>
+      <div class="pf-desc">JSON structuré : route, needs_web, needs_calendar, temporal_reference. Pré-fetch calendrier si besoin.</div>
+      <div class="pf-tags"><span class="pf-tag">intent</span><span class="pf-tag">route</span></div>
     </div>
-  </section>
+    <div class="pf-step">
+      <div class="pf-num">03</div>
+      <div class="pf-title">Router</div>
+      <div class="pf-desc">Dispatche vers le crew selon route. calendar_context injecté avant kickoff si needs_calendar.</div>
+      <div class="pf-tags"><span class="pf-tag">conversation</span><span class="pf-tag">shell</span><span class="pf-tag">scheduler</span></div>
+    </div>
+    <div class="pf-step">
+      <div class="pf-num">04</div>
+      <div class="pf-title">Conversation</div>
+      <div class="pf-desc">Memory retriever + agent principal. Reçoit contexte enrichi : mémoire, docs, web, calendrier.</div>
+      <div class="pf-tags"><span class="pf-tag">RRF</span><span class="pf-tag">retrieval</span></div>
+    </div>
+    <div class="pf-step">
+      <div class="pf-num">05</div>
+      <div class="pf-title">Consolidation</div>
+      <div class="pf-desc">En fin de session : extraction faits, format atomique/narratif, upsert memory.md + SQLite.</div>
+      <div class="pf-tags"><span class="pf-tag">facts[]</span><span class="pf-tag">upsert</span></div>
+    </div>
+    <div class="pf-step new-crew">
+      <div class="pf-num">06</div>
+      <div class="pf-title">Scheduler<br>Crew</div>
+      <div class="pf-desc">Langage naturel → one_shot/recurring → create_task() → scheduled_tasks DB + tasks.md.</div>
+      <div class="pf-tags"><span class="pf-tag">trigger_at</span><span class="pf-tag">cron_expr</span></div>
+    </div>
+    <div class="pf-step new-crew">
+      <div class="pf-num">07</div>
+      <div class="pf-title">Briefing<br>Crew</div>
+      <div class="pf-desc">Appelé par scheduler.py. Compile calendrier + session + mémoire → Markdown structuré en 3 sections.</div>
+      <div class="pf-tags"><span class="pf-tag">briefing.md</span><span class="pf-tag">weekly.md</span></div>
+    </div>
+    <div class="pf-step">
+      <div class="pf-num">08</div>
+      <div class="pf-title">Curiosity<br>Crew</div>
+      <div class="pf-desc">Détection gaps hybride Python+LLM. Questionnaire CLI. Skip DB pour éviter repropositions.</div>
+      <div class="pf-tags"><span class="pf-tag">structural</span><span class="pf-tag">contextual</span></div>
+    </div>
+  </div>
 </div>
 </div>
 
 <div class="divider"></div>
 
-<!-- ══ DOCKER SECURITY ══ -->
-<div class="docker-section" id="docker">
-<div>
+<!-- DOCKER -->
+<section id="docker">
   <div class="reveal">
-    <span class="section-label" style="color:var(--a2);">Sécurité · Docker Phase 3</span>
-    <h2 class="section-title">Cloisonné.<br>Avant d'agir.</h2>
-    <p class="section-desc">Un agent capable d'exécuter des commandes système doit tourner dans un conteneur blindé. Toutes les garanties sont en place avant d'implémenter le ShellCrew.</p>
+    <span class="section-label">Docker · v9</span>
+    <h2 class="section-title">2 services.<br>1 volume partagé.</h2>
+    <p class="section-desc">Le scheduler tourne en background dans son propre container. Même sécurité que le service principal. <code>/data</code> est le seul point de contact entre les deux.</p>
   </div>
   <div class="docker-grid reveal">
     <div class="dock-card">
-      <div class="dock-icon">🚫</div>
-      <div class="dock-title">cap_drop: ALL + no-new-privileges</div>
-      <div class="dock-desc">Toutes les capabilities Linux supprimées. Aucune escalade de droits possible via setuid. L'agent ne peut pas monter de filesystem, ne peut pas raw-socket, ne peut rien faire hors /data.</div>
-      <div class="dock-code">cap_drop: [ALL]<br>security_opt:<br>  - no-new-privileges:true</div>
+      <div class="dock-icon">🤖</div>
+      <div class="dock-title">mnemo — service principal</div>
+      <div class="dock-desc">Session interactive CLI. read-only, cap_drop: ALL, uid 1000. Redémarre jamais automatiquement (restart: "no") — session intentionnelle.</div>
+      <div class="dock-code">docker compose run --rm mnemo<br>./mnemo.sh</div>
     </div>
     <div class="dock-card">
-      <div class="dock-icon">🔏</div>
-      <div class="dock-title">Filesystem read-only</div>
-      <div class="dock-desc">Tout le filesystem est non-modifiable sauf <code>/data</code> (volume hôte) et deux tmpfs en mémoire. Le code source dans <code>/app</code> ne peut pas être modifié depuis l'intérieur du conteneur.</div>
-      <div class="dock-code">read_only: true<br>tmpfs: [/tmp, /run]<br>volumes: [DATA:/data]</div>
+      <div class="dock-icon">⏰</div>
+      <div class="dock-title">mnemo-scheduler — service background</div>
+      <div class="dock-desc">Tourne en daemon. Même sécurité (read-only, cap_drop: ALL, uid 1000). Volume /data partagé. <code>DATA_PATH=/data</code> forcé pour éviter résolution depuis WORKDIR.</div>
+      <div class="dock-code">./mnemo.sh scheduler<br>restart: on-failure:3</div>
     </div>
     <div class="dock-card">
-      <div class="dock-icon">👤</div>
-      <div class="dock-title">Utilisateur non-root · uid 1000</div>
-      <div class="dock-desc">L'agent ne tourne jamais en root. Même si une vulnérabilité permettait d'exécuter du code arbitraire, les droits sont ceux d'un utilisateur lambda sans sudo.</div>
-      <div class="dock-code">USER mnemo  # uid 1000<br>user: "1000:1000"<br># HOME=/tmp → ChromaDB cache</div>
+      <div class="dock-icon">📁</div>
+      <div class="dock-title">/data — source de vérité partagée</div>
+      <div class="dock-desc">Volume monté dans les deux containers. Contient : memory.db, memory.md, sessions/, briefing.md, weekly.md, tasks.md, uncertain_cases.jsonl, router_model.joblib.</div>
+      <div class="dock-code">volumes: ${DATA_DIR:-./data}:/data</div>
     </div>
     <div class="dock-card">
-      <div class="dock-icon">⚡</div>
-      <div class="dock-title">Limites ressources</div>
-      <div class="dock-desc">Une commande mal formée ou un LLM en boucle ne peut pas saturer la machine hôte. Limites RAM et CPU configurables via <code>.env</code>.</div>
-      <div class="dock-code">memory: ${MNEMO_MEMORY_LIMIT:-1g}<br>cpus: "${MNEMO_CPU_LIMIT:-2.0}"</div>
+      <div class="dock-icon">🔧</div>
+      <div class="dock-title">mnemo.sh — interface unifiée</div>
+      <div class="dock-desc">Script shell à la racine. Wraps toutes les commandes Docker. Tip WSL2 généré dans install.sh : alias mnemo pointant vers le script.</div>
+      <div class="dock-code">./mnemo.sh briefing<br>./mnemo.sh logs<br>./mnemo.sh help</div>
     </div>
-    <div class="dock-card">
-      <div class="dock-icon">📋</div>
-      <div class="dock-title">shell_whitelist.py</div>
-      <div class="dock-desc">Whitelist de commandes validée avant confirmation utilisateur. 3 familles autorisées. Blacklist explicite (bash, curl, sudo). Validation path traversal. <code>rm -rf</code> impossible.</div>
-      <div class="dock-code">ALLOWED: ls cat find grep<br>  mkdir mv cp rm touch<br>  python (*.py dans /data)</div>
-    </div>
-    <div class="net-diagram">
-      <div class="net-diagram-title">Architecture réseau — isolation double</div>
-      <div class="net-flow">
-        <div class="net-node mnemo">
-          <div class="net-node-label">mnemo</div>
-          <div class="net-node-sub">uid 1000 · read-only</div>
-        </div>
-        <div class="net-arrow">
-          <div class="net-arrow-label">mnemo_internal</div>
-          <div class="net-arrow-line">⟷</div>
-          <div class="net-arrow-label">isolé</div>
-        </div>
-        <div class="net-node searxng">
-          <div class="net-node-label">SearXNG</div>
-          <div class="net-node-sub">:8080 · profil search</div>
-        </div>
-        <div class="net-arrow">
-          <div class="net-arrow-label">pas de route</div>
-          <div class="net-arrow-line net-blocked">✕</div>
-          <div class="net-arrow-label">vers internet</div>
-        </div>
-        <div class="net-node internet">
-          <div class="net-node-label">Internet</div>
-          <div class="net-node-sub">inaccessible depuis<br>mnemo_internal</div>
-        </div>
-        <div style="width:100%;height:1px;background:var(--border);margin:16px 0;"></div>
-        <div class="net-node mnemo">
-          <div class="net-node-label">mnemo</div>
-          <div class="net-node-sub">mnemo_external</div>
-        </div>
-        <div class="net-arrow">
-          <div class="net-arrow-label">host-gateway</div>
-          <div class="net-arrow-line">⟶</div>
-          <div class="net-arrow-label">11434</div>
-        </div>
-        <div class="net-node ollama">
-          <div class="net-node-label">Ollama</div>
-          <div class="net-node-sub">machine hôte</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-
-<div class="divider"></div>
-
-<!-- ══ INGESTION ══ -->
-<section id="ingestion">
-  <div class="reveal">
-    <span class="section-label">Phase 2 — Perception</span>
-    <h2 class="section-title">Ingérer n'importe quel document.</h2>
-    <p class="section-desc">Un seul dispatcher <code>ingest_file(path)</code> — détection automatique du format, déduplication par hash MD5, pipeline commun.</p>
-  </div>
-  <div class="ingest-grid reveal">
-    <div class="ing-card pdf"><div class="ing-icon">📄</div><div class="ing-title">PDF</div><div class="ing-desc">Extraction page par page via pypdf. Nettoyage des césures et espaces. Barre de progression.</div><div class="ing-tags"><span class="ing-tag">pypdf</span><span class="ing-tag">clean_text()</span><span class="ing-tag">sliding window</span></div></div>
-    <div class="ing-card docx"><div class="ing-icon">📝</div><div class="ing-title">DOCX</div><div class="ing-desc">Paragraphes, headings préfixés <code>#</code> et tableaux via python-docx.</div><div class="ing-tags"><span class="ing-tag">python-docx</span><span class="ing-tag">heading levels</span><span class="ing-tag">tables</span></div></div>
-    <div class="ing-card txt"><div class="ing-icon">📃</div><div class="ing-title">TXT & Markdown</div><div class="ing-desc">Lecture directe UTF-8. Pages fictives de ~500 mots. Zéro dépendance externe.</div><div class="ing-tags"><span class="ing-tag">UTF-8</span><span class="ing-tag">500 mots/page</span></div></div>
-    <div class="ing-card code"><div class="ing-icon">💻</div><div class="ing-title">Code source</div><div class="ing-desc">Python → AST précis. JS, TS, C, Java, shell → regex patterns. Header langage dans chaque chunk.</div><div class="ing-tags"><span class="ing-tag">.py .js .ts</span><span class="ing-tag">.c .cpp .java</span><span class="ing-tag">.sh .ps1</span></div></div>
-    <div class="ing-card retrieval"><div class="ing-icon">🔍</div><div class="ing-title">retrieve_all() — fusion globale</div><div class="ing-desc">Mémoire personnelle + documents ingérés fusionnés par Reciprocal Rank Fusion. <code>🧠</code> mémoire personnelle · <code>📄 fichier.pdf — p.42</code> document.</div><div class="flow-banner"><span class="fb-step" style="color:var(--a1);">🧠 FTS5 + cosine mémoire</span><span class="fb-sep">+</span><span class="fb-step" style="color:var(--a6);">📄 FTS5 + cosine docs</span><span class="fb-sep">→</span><span class="fb-step">RRF × importance × freshness</span><span class="fb-sep">→</span><span class="fb-step">top K chunks</span></div></div>
-    <div class="ing-card dedup"><div class="ing-icon">🔐</div><div class="ing-title">Déduplication MD5</div><div class="ing-desc">Hash MD5 du fichier entier. Double ingestion détectée instantanément. Chunk ID = hash(doc_id + page + index + contenu).</div><div class="ing-tags"><span class="ing-tag">file_hash()</span><span class="ing-tag">is_already_ingested()</span></div></div>
   </div>
 </section>
 
 <div class="divider"></div>
 
-<!-- ══ STOCKAGE ══ -->
-<section id="stockage">
-  <div class="reveal">
-    <span class="section-label">Stockage</span>
-    <h2 class="section-title">Deux mémoires,<br>un seul retrieval.</h2>
-  </div>
-  <div class="storage-two reveal" style="margin-top:50px;">
-    <div class="stor-card" style="border-color:rgba(247,183,49,0.3);">
-      <div class="stor-title" style="color:var(--a3);">📄 memory.md</div>
-      <div class="stor-desc">Source de vérité humaine-lisible. Champs vides = notes d'intention pour l'agent. Format atomique sur les infos structurées, narratif sur les contextes riches.</div>
-      <div class="stor-tags"><span class="stor-tag">🧑 Identité Utilisateur</span><span class="stor-tag">🤖 Identité Agent</span><span class="stor-tag">📚 Connaissances</span><span class="stor-tag">🔁 Historique sessions</span><span class="stor-tag">⚠️ À ne jamais oublier</span></div>
-    </div>
-    <div class="stor-card" style="border-color:rgba(124,106,247,0.3);">
-      <div class="stor-title" style="color:var(--a1);">🗄️ SQLite — 10 tables</div>
-      <div class="stor-desc">Index double FTS5 + vectoriel (768d float32). Tables mémoire (violet) + tables documents (rose) + tables curiosity (jaune).</div>
-      <div class="stor-tags"><span class="stor-tag h1">chunks</span><span class="stor-tag h1">embeddings</span><span class="stor-tag h1">chunks_fts</span><span class="stor-tag h1">sessions</span><span class="stor-tag h1">session_facts</span><span class="stor-tag h1">file_state</span><span class="stor-tag h6">documents</span><span class="stor-tag h6">doc_chunks</span><span class="stor-tag h6">doc_embeddings</span><span class="stor-tag h6">doc_chunks_fts</span></div>
-    </div>
-  </div>
-  <div class="rrf-banner reveal">
-    <div class="rrf-title">retrieve_all(query, top_k_final=5)</div>
-    <div class="rrf-flow"><span class="rrf-step">FTS5 keyword</span><span class="rrf-sep">+</span><span class="rrf-step">cosine similarity</span><span class="rrf-sep">→</span><span class="rrf-step">adaptive weights</span><span class="rrf-sep">→</span><span class="rrf-step">RRF × importance × freshness</span><span class="rrf-sep">→</span><span class="rrf-step">merge memory + docs</span><span class="rrf-sep">→</span><span class="rrf-step">top K chunks</span></div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ══ BUGS ══ -->
-<div class="bugs-section">
-<div>
-  <div class="reveal">
-    <span class="section-label">Qualité · Total cumulé</span>
-    <h2 class="section-title">23 bugs réglés.<br>13 aujourd'hui · Docker.</h2>
-    <p class="section-desc">13 bugs de code (phases 0-2). 10 bugs de containerisation Docker. 3 bugs de configuration finale.</p>
-  </div>
-  <div class="bugs-grid reveal">
-    <!-- bugs 1-6 (phase 1-2) résumés -->
-    <div class="bug-card"><span class="bug-badge">BUG #1</span><div class="bug-title">Perte silencieuse de chunks</div><div class="bug-cause">Dernier <code>###</code> de chaque <code>##</code> perdu lors du parsing — sous-sections entières non indexées.</div><div class="bug-fix">Sauvegarde du chunk courant avant reset à chaque changement de section</div></div>
-    <div class="bug-card"><span class="bug-badge">BUG #2</span><div class="bug-title">Crash sur query vide</div><div class="bug-cause">SQLite FTS5 lève <code>OperationalError</code> sur string vide. Pipeline entier plantait.</div><div class="bug-fix">Guard <code>if not query.strip(): return []</code> en tête de <code>search_keyword()</code></div></div>
-    <div class="bug-card"><span class="bug-badge">BUG #3-6</span><div class="bug-title">Collision ID · AttributeError · Seuil MIN_LEN · AST walk doublons</div><div class="bug-cause">Hash sur contenu seul → collision. para.style=None → crash DOCX. MIN_CHUNK_LEN=80 → fonctions courtes perdues. ast.walk() → méthodes indexées deux fois.</div><div class="bug-fix">Hash sur position+contenu · guard triple para.style · seuil désactivé code · iter_child_nodes()</div></div>
-    <div class="bug-card" style="border-color:rgba(247,183,49,0.15);"><span class="bug-badge" style="background:rgba(247,183,49,0.15);border-color:rgba(247,183,49,0.3);color:var(--a3);">SESSIONS #7-13</span><div class="bug-title">7 bugs de session (CuriosityCrew + Web)</div><div class="bug-cause">Import inexistant · _TeeStream cassait input() · update_markdown écrasait tout · labels template = faux positifs · boucle infinie style · header ### matchait alias · merge écrasait valeurs réelles</div><div class="bug-fix">Renommage imports · suppression TeeStream · enrichissement conditionnel · _line_is_real_value() · skip lignes # · filtrage ligne par ligne</div></div>
-    <!-- bugs docker 14-20 -->
-    <div class="bug-card docker-bug"><span class="bug-badge">BUG #14 · Docker</span><div class="bug-title">install.sh ne trouve pas docker-compose.yml</div><div class="bug-cause">Script lancé depuis <code>/waifuclawd/</code> — <code>docker compose build</code> cherchait le fichier dans le CWD, pas dans <code>docker/</code>.</div><div class="bug-fix"><code>cd "$(dirname "${BASH_SOURCE[0]}")"</code> + <code>-f "${COMPOSE_FILE}"</code> explicite dans toutes les commandes compose</div></div>
-    <div class="bug-card docker-bug"><span class="bug-badge">BUG #15 · Docker</span><div class="bug-title">read_only bloquait ChromaDB (HOME=/home/mnemo)</div><div class="bug-cause">CrewAI tente <code>mkdir /home/mnemo/.local/share/data</code> à l'import. <code>read_only:true</code> + <code>/home</code> non writable → PermissionError avant même le premier message.</div><div class="bug-fix"><code>ENV HOME=/tmp</code> dans Dockerfile — tmpfs déjà writable, ChromaDB cache éphémère</div></div>
-    <div class="bug-card docker-bug"><span class="bug-badge">BUG #16 · Docker</span><div class="bug-title">litellm manquant → ImportError</div><div class="bug-cause"><code>crewai</code> seul dans requirements.txt ne tire pas litellm. CrewAI ≥0.130 l'exige pour router les appels LLM vers Ollama.</div><div class="bug-fix"><code>crewai[tools]</code> + <code>litellm[proxy]</code> + <code>fastapi</code> dans requirements.txt</div></div>
-    <div class="bug-card docker-bug"><span class="bug-badge">BUG #17 · Docker</span><div class="bug-title">Commande "run" absente du dispatch</div><div class="bug-cause"><code>CMD ["run"]</code> dans Dockerfile, mais le <code>if/elif</code> dans main.py ne gérait pas la valeur "run" → "Commande inconnue : run".</div><div class="bug-fix">Ajout de <code>if sys.argv[1] in ("run", "start"): run()</code> en tête du dispatch</div></div>
-    <div class="bug-card docker-bug"><span class="bug-badge">BUG #18 · Docker</span><div class="bug-title">Réseau internal bloquait Ollama</div><div class="bug-cause"><code>internal: true</code> sur l'unique réseau coupe tout trafic sortant, y compris vers <code>host.docker.internal</code> (Ollama). L'agent ne pouvait plus évaluer aucun message.</div><div class="bug-fix">Deux réseaux : <code>mnemo_internal</code> (SearXNG, isolé) + <code>mnemo_external</code> (Ollama via host-gateway)</div></div>
-    <div class="bug-card docker-bug"><span class="bug-badge">BUG #19 · Docker</span><div class="bug-title">Client ollama Python ignorait API_BASE</div><div class="bug-cause"><code>ollama.embeddings()</code> se connecte toujours à <code>localhost:11434</code> — ignorait <code>API_BASE=http://host.docker.internal:11434</code>. ConnectionError à chaque embedding.</div><div class="bug-fix"><code>_ollama_client = ollama.Client(host=OLLAMA_HOST)</code> au niveau module — <code>OLLAMA_HOST</code> lu depuis l'env</div></div>
-    <div class="bug-card docker-bug"><span class="bug-badge">BUG #20 · Docker</span><div class="bug-title">web_search non patchable dans les tests</div><div class="bug-cause">Import local de <code>web_search</code> à l'intérieur de <code>_handle_web_confirmation()</code> — <code>patch('Mnemo.main.web_search')</code> trouvait AttributeError car le symbole n'existait pas au niveau module.</div><div class="bug-fix">Import déplacé au niveau module — <code>patch('Mnemo.tools.web_tools.web_search')</code> en fallback pour compatibilité</div></div>
-    <div class="bug-card docker-bug"><span class="bug-badge">BUG #21 · Docker</span><div class="bug-title">Venv uv vide — packages installés dans le mauvais Python</div><div class="bug-cause"><code>uv venv /app/venv</code> crée le venv mais <code>pip install</code> (sans activation) installait dans le Python système. <code>ENTRYPOINT</code> pointait vers <code>/app/venv/bin/python</code> — vide. L'agent démarrait sans aucune dépendance.</div><div class="bug-fix">Suppression du venv. Retour au pip système direct — simple, sans ambiguïté, packages toujours là où Python les cherche</div></div>
-    <div class="bug-card"><span class="bug-badge">BUG #22</span><div class="bug-title">{label} interprété comme variable de template</div><div class="bug-cause">CrewAI parse les descriptions de tâches YAML et tente d'injecter toutes les <code>{variables}</code>. L'exemple de format <code>- **{label}** : {réponse}</code> dans <code>curiosity_tasks.yaml</code> déclenchait un crash à chaque écriture de réponse.</div><div class="bug-fix"><code>{{label}}</code> et <code>{{réponse}}</code> — double accolades pour échapper l'interpolation CrewAI</div></div>
-    <div class="bug-card"><span class="bug-badge">BUG #23</span><div class="bug-title">install.sh sans -f → compose file introuvable</div><div class="bug-cause">Le fix <code>COMPOSE_FILE</code> avait été appliqué en session mais jamais répercuté sur <code>install.sh</code>. <code>docker_compose()</code> appelait <code>$COMPOSE_CMD "$@"</code> sans <code>-f</code> → "no configuration file provided" depuis tout répertoire autre que <code>docker/</code>.</div><div class="bug-fix"><code>COMPOSE_FILE</code> détecté au démarrage du script. <code>docker_compose()</code> → <code>$COMPOSE_CMD -f "${COMPOSE_FILE}" "$@"</code></div></div>
-  </div>
-</div>
-</div>
-
-<div class="divider"></div>
-
-<!-- ══ TESTS ══ -->
-<section id="tests">
-  <div class="reveal">
-    <span class="section-label">Tests</span>
-    <h2 class="section-title">502 tests.<br>Zéro appel Ollama requis.</h2>
-    <p class="section-desc">Chaque module est testable sans infrastructure externe. Le router est couvert à 100% — toutes les routes, tous les fallbacks, tous les cas d'injection de contexte web.</p>
-  </div>
-  <div class="tests-grid reveal">
-    <div class="test-card"><div class="test-num">66</div><div class="test-file">test_memory_tools.py</div><div class="test-desc">Briques bas niveau : sanitize, hash, parsing Markdown, sessions, freshness, importance</div></div>
-    <div class="test-card"><div class="test-num">40</div><div class="test-file">test_retrieval.py</div><div class="test-desc">Retrieval hybride : RRF, cosine, FTS5, adaptive weights (30 offline + 10 @ollama)</div></div>
-    <div class="test-card"><div class="test-num">25</div><div class="test-file">test_session_cycle.py</div><div class="test-desc">Cycle complet : crews mockés, sessions orphelines, scénarios bout en bout</div></div>
-    <div class="test-card" style="border-color:rgba(249,122,249,0.3);"><div class="test-num" style="color:var(--a6);">89</div><div class="test-file" style="color:var(--a6);">test_ingest_tools.py ✦</div><div class="test-desc">Pipeline ingestion : chunking, hash, DB, PDF/DOCX/TXT/code source, dispatcher</div></div>
-    <div class="test-card" style="border-color:rgba(247,183,49,0.3);"><div class="test-num" style="color:var(--a3);">79</div><div class="test-file" style="color:var(--a3);">test_curiosity.py ✦</div><div class="test-desc">CuriosityCrew : gaps structurels, _line_is_real_value, upsert label, skip DB, collect_answers mocké</div></div>
-    <div class="test-card" style="border-color:rgba(78,205,196,0.3);"><div class="test-num" style="color:var(--a2);">110</div><div class="test-file" style="color:var(--a2);">test_calendar_tools.py ✦</div><div class="test-desc">Calendrier : datetime FR (7 jours × 12 mois), ICS parsing, cache TTL, fetch mock URL/local, formatage bannière</div></div>
-    <div class="test-card" style="border-color:rgba(255,107,107,0.3);"><div class="test-num" style="color:var(--a4);">82</div><div class="test-file" style="color:var(--a4);">test_web_tools.py ✦</div><div class="test-desc">Web : sanitize PII, blocklist URLs privées, safe_extract, SearXNG + DDG mockés, fallback, audit log</div></div>
-    <div class="test-card" style="border-color:rgba(124,106,247,0.3);"><div class="test-num" style="color:var(--a1);">32</div><div class="test-file" style="color:var(--a1);">test_router.py ✦ NEW</div><div class="test-desc">Router : 4 routes + fallback, web_context injecté, stubs Phase 3, pipeline handle_message mocké bout en bout</div></div>
-  </div>
-  <div class="test-total reveal">
-    <div><div class="tt-label">Total</div><div class="tt-num">502 tests ✅</div></div>
-    <div class="tt-bar-wrap"><div class="tt-bar" style="width:100%"></div></div>
-    <div style="font-size:0.65rem;color:var(--muted);">0 fails · 0 flaky · pytest 9.0</div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ══ ROADMAP ══ -->
+<!-- ROADMAP -->
 <section id="roadmap">
   <div class="reveal">
     <span class="section-label">Roadmap</span>
@@ -421,7 +440,7 @@
       <ul class="rm-items">
         <li class="done">Mémoire hybride FTS5 + vectoriel</li>
         <li class="done">RRF · importance · freshness</li>
-        <li class="done">CTRL+C → finally → consolidation</li>
+        <li class="done">CTRL+C → consolidation</li>
         <li class="done">Ollama Docker · num_ctx 8192</li>
       </ul>
     </div>
@@ -430,10 +449,9 @@
       <span class="rm-status">✓ Complète</span>
       <div class="rm-title">Stabilisation</div>
       <ul class="rm-items">
-        <li class="done">502 tests (niveaux 1-4)</li>
+        <li class="done">502 tests</li>
         <li class="done">6 bugs corrigés</li>
         <li class="done">Architecture validée</li>
-        <li class="done">Tests avant features</li>
       </ul>
     </div>
     <div class="rm-phase rm-done">
@@ -441,11 +459,10 @@
       <span class="rm-status">✓ Complète</span>
       <div class="rm-title">Perception</div>
       <ul class="rm-items">
-        <li class="done">Ingestion PDF/DOCX/TXT/MD/code</li>
-        <li class="done">retrieve_all() · RRF global</li>
+        <li class="done">Ingestion PDF/DOCX/TXT/code</li>
         <li class="done">CuriosityCrew hybride</li>
         <li class="done">Conscience temporelle + ICS</li>
-        <li class="done">Web occasionnel SearXNG+DDG</li>
+        <li class="done">Web SearXNG + DDG</li>
         <li class="done">Docker · install.sh</li>
       </ul>
     </div>
@@ -454,14 +471,16 @@
       <span class="rm-status">◐ En cours</span>
       <div class="rm-title">Action</div>
       <ul class="rm-items">
-        <li class="done">Router pattern · 4 routes</li>
-        <li class="done">Docker opérationnel · non-root · read-only</li>
-        <li class="done">shell_whitelist.py</li>
-        <li class="wip">ShellCrew · outils shell</li>
+        <li class="done">Router 4 routes + ML</li>
+        <li class="done">Docker non-root · read-only</li>
+        <li class="done">ShellCrew + whitelist</li>
+        <li class="done">Scheduler + BriefingCrew</li>
+        <li class="done">SchedulerCrew (NL → DB)</li>
+        <li class="done">Alertes deadlines J-1/J-3</li>
+        <li class="done">mnemo.sh</li>
+        <li>File management</li>
         <li>Agenda CRUD CalDAV</li>
-        <li>Scheduler · morning briefing</li>
         <li>Dashboard FastAPI</li>
-        <li>Chiffrement + hardening</li>
       </ul>
     </div>
     <div class="rm-phase rm-next">
@@ -471,7 +490,7 @@
       <ul class="rm-items">
         <li>REST API (FastAPI)</li>
         <li>Local TTS / STT</li>
-        <li>Raspberry PI embedding</li>
+        <li>Raspberry PI</li>
         <li>Unity Integration</li>
       </ul>
     </div>
@@ -482,7 +501,6 @@
       <ul class="rm-items">
         <li>Suggestions contextualisées</li>
         <li>Détection de routines</li>
-        <li>Alertes de deadlines</li>
         <li>Compression memory.md</li>
         <li>Multi-profils</li>
       </ul>
@@ -494,27 +512,28 @@
 
 <footer>
   <div class="footer-logo">Mnemo</div>
-  <div class="footer-sub">Agent mémoire personnel · 100% local · 100% privé · session 2026-03-02 v7.1 · Phase 3 ◐</div>
+  <div class="footer-sub">Agent mémoire personnel · 100% local · 100% privé · session 2026-03-04 v9 · Phase 3 ◐</div>
   <div class="footer-stack">
     <span class="fs-tag">CrewAI[tools] ≥ 0.130</span>
     <span class="fs-tag">Ollama ≥ 0.4</span>
-    <span class="fs-tag">litellm[proxy]</span>
-    <span class="fs-tag">SQLite · FTS5</span>
+    <span class="fs-tag">litellm</span>
+    <span class="fs-tag">SQLite · FTS5 · 11 tables</span>
     <span class="fs-tag">nomic-embed-text · 768d</span>
+    <span class="fs-tag">icalendar ≥ 6.0 · RRULE</span>
     <span class="fs-tag">pypdf · python-docx</span>
     <span class="fs-tag">numpy ≥ 1.26</span>
-    <span class="fs-tag">pytest 9.0</span>
-    <span class="fs-tag">Python 3.12</span>
+    <span class="fs-tag">scikit-learn · TF-IDF+LR</span>
     <span class="fs-tag">SearXNG · ddgs</span>
-    <span class="fs-tag">Docker Compose · read-only</span>
-    <span class="fs-tag">cap_drop: ALL</span>
+    <span class="fs-tag">Docker Compose · 2 services</span>
+    <span class="fs-tag">cap_drop: ALL · read-only</span>
+    <span class="fs-tag">Python 3.12</span>
   </div>
 </footer>
 
 <script>
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.12 });
+}, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 </body>

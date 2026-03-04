@@ -87,6 +87,62 @@ section { padding:100px 40px; max-width:1100px; margin:0 auto; }
 .sess-fix   { font-size:0.65rem; color:var(--a5); line-height:1.6; }
 .sess-fix::before { content:'→ '; }
 
+/* FILES */
+.files-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:40px; }
+.file-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:18px 20px; }
+.file-name { font-size:0.72rem; color:var(--a2); margin-bottom:6px; font-weight:600; }
+.file-desc { font-size:0.62rem; color:var(--muted); line-height:1.6; }
+.file-tag  { display:inline-block; font-size:0.52rem; padding:2px 7px; border-radius:4px; margin-top:8px; background:rgba(78,205,196,0.1); border:1px solid rgba(78,205,196,0.2); color:var(--a2); }
+.file-tag.mod { background:rgba(247,183,49,0.1); border-color:rgba(247,183,49,0.2); color:var(--a3); }
+.file-tag.new { background:rgba(168,224,99,0.1); border-color:rgba(168,224,99,0.2); color:var(--a5); }
+
+/* DB TABLE */
+.db-section { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.db-section > div { max-width:1100px; margin:0 auto; padding:100px 40px; }
+.db-tables { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:50px; }
+.db-table { background:var(--bg); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.db-table-header { padding:14px 20px; background:var(--s2); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.db-table-name { font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; color:var(--a1); }
+.db-table-badge { font-size:0.55rem; padding:2px 8px; border-radius:4px; background:rgba(124,106,247,0.12); border:1px solid rgba(124,106,247,0.25); color:var(--a1); }
+.db-table-badge.new { background:rgba(78,205,196,0.12); border-color:rgba(78,205,196,0.25); color:var(--a2); }
+.db-col { display:flex; align-items:baseline; gap:10px; padding:8px 20px; border-bottom:1px solid rgba(255,255,255,0.03); }
+.db-col:last-child { border-bottom:none; }
+.db-col-name { font-size:0.67rem; color:var(--text); min-width:120px; }
+.db-col-type { font-size:0.6rem; color:var(--a3); min-width:70px; }
+.db-col-desc { font-size:0.6rem; color:var(--muted); line-height:1.5; }
+
+
+/* SCHEDULER ARCHITECTURE */
+.sched-section { background:linear-gradient(180deg,var(--bg) 0%,#08080f 100%); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.sched-section > div { max-width:1100px; margin:0 auto; padding:100px 40px; }
+
+.flow-diagram { display:flex; align-items:center; gap:0; margin-top:50px; background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+.flow-node { flex:1; padding:28px 20px; text-align:center; border-right:1px solid var(--border); position:relative; transition:background 0.2s; }
+.flow-node:last-child { border-right:none; }
+.flow-node:hover { background:var(--s2); }
+.flow-node-icon { font-size:1.6rem; margin-bottom:10px; }
+.flow-node-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.78rem; margin-bottom:6px; }
+.flow-node-desc { font-size:0.6rem; color:var(--muted); line-height:1.6; }
+.flow-arrow { font-size:1.2rem; color:var(--dimmed); flex-shrink:0; padding:0 4px; }
+
+.sched-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:40px; }
+.sched-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; position:relative; overflow:hidden; transition:transform 0.2s,border-color 0.2s; }
+.sched-card:hover { transform:translateY(-2px); }
+.sched-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+.sched-card.system::before  { background:linear-gradient(to right,var(--a2),transparent); }
+.sched-card.user::before    { background:linear-gradient(to right,var(--a1),transparent); }
+.sched-card.output::before  { background:linear-gradient(to right,var(--a3),transparent); }
+.sched-card.system { border-color:rgba(78,205,196,0.2); } .sched-card.system:hover { border-color:rgba(78,205,196,0.5); }
+.sched-card.user   { border-color:rgba(124,106,247,0.2); } .sched-card.user:hover   { border-color:rgba(124,106,247,0.5); }
+.sched-card.output { border-color:rgba(247,183,49,0.2);  } .sched-card.output:hover { border-color:rgba(247,183,49,0.5); }
+.sched-badge { font-size:0.55rem; padding:2px 8px; border-radius:4px; letter-spacing:0.08em; margin-bottom:12px; display:inline-block; }
+.system .sched-badge { background:rgba(78,205,196,0.12); border:1px solid rgba(78,205,196,0.3); color:var(--a2); }
+.user   .sched-badge { background:rgba(124,106,247,0.12); border:1px solid rgba(124,106,247,0.3); color:var(--a1); }
+.output .sched-badge { background:rgba(247,183,49,0.12);  border:1px solid rgba(247,183,49,0.3);  color:var(--a3); }
+.sched-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; margin-bottom:8px; }
+.sched-desc  { font-size:0.66rem; color:var(--muted); line-height:1.7; }
+.sched-code  { font-size:0.6rem; color:var(--a5); margin-top:10px; line-height:1.6; }
+
 /* SCHEMA */
 .schema-section { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
 .schema-section > div { max-width:1100px; margin:0 auto; padding:100px 40px; }
@@ -289,3 +345,4 @@ footer { text-align:center; padding:60px 40px; border-top:1px solid var(--border
   .bugs-grid,.session-grid { grid-template-columns:1fr; }
   .phil-card:nth-child(5) { grid-column:span 1; }
 }
+
