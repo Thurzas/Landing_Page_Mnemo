@@ -1,540 +1,604 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mnemo v9 — Agent Mémoire Personnel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mnemo — Assistant personnel local</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@700;800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
+<!-- ── Navigation ───────────────────────────────────────────── -->
 <nav>
-  <div class="nav-logo">Mnemo</div>
+  <span class="nav-logo">Mnemo</span>
   <ul class="nav-links">
-    <li><a href="#scheduler">Scheduler</a></li>
-    <li><a href="#db">Base de données</a></li>
-    <li><a href="#session">Session v9</a></li>
+    <li><a href="#philosophie">Philosophie</a></li>
+    <li><a href="#memoire">Mémoire</a></li>
     <li><a href="#pipeline">Pipeline</a></li>
+    <li><a href="#crews">Crews</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#patchnote">Patch note</a></li>
   </ul>
-  <span class="nav-badge">v9 · Phase 3 ◐</span>
+  <span class="nav-badge">Phase 3 · actif</span>
 </nav>
 
-<!-- HERO -->
-<div class="hero">
+<!-- ── Hero ─────────────────────────────────────────────────── -->
+<section class="hero" id="hero">
   <div class="hero-orbs">
     <div class="orb orb1"></div>
     <div class="orb orb2"></div>
     <div class="orb orb3"></div>
   </div>
-  <div class="hero-eyebrow">Session 2026-03-04 — v9</div>
+
+  <p class="hero-eyebrow">Assistant personnel · Offline-first · Privé</p>
+
   <h1 class="hero-title">
     <span class="line1">Mnemo</span>
-    <span class="line2">Scheduler.</span>
+    <span class="line2">remembers.</span>
   </h1>
-  <p class="hero-sub">Morning briefing automatique. Rappels en langage naturel. Résumé hebdomadaire. Alertes deadlines J-1/J-3. Le premier agent Mnemo qui agit sans qu'on lui demande.</p>
+
+  <p class="hero-sub">
+    Un assistant local construit sur CrewAI + Ollama.
+    Zéro cloud, zéro API externe — tout tourne sur votre machine.
+    Il apprend de vous, raisonne avec vous, et agit pour vous.
+  </p>
+
   <div class="hero-stats">
-    <div class="hstat"><span class="hstat-num">5</span><span class="hstat-label">bugs réglés</span></div>
-    <div class="hstat"><span class="hstat-num">11</span><span class="hstat-label">tables SQLite</span></div>
-    <div class="hstat"><span class="hstat-num">8</span><span class="hstat-label">crews actifs</span></div>
-    <div class="hstat"><span class="hstat-num">4</span><span class="hstat-label">outputs /data</span></div>
-    <div class="hstat"><span class="hstat-num">2</span><span class="hstat-label">services Docker</span></div>
-  </div>
-</div>
-
-<div class="divider"></div>
-
-<!-- SCHEDULER ARCHITECTURE -->
-<div class="sched-section" id="scheduler">
-<div>
-  <div class="reveal">
-    <span class="section-label" style="color:var(--a2);">Phase 3 · Scheduler</span>
-    <h2 class="section-title">Agit pendant<br>que tu dors.</h2>
-    <p class="section-desc">Un service Docker séparé tourne en background. Boucle toutes les 60 secondes. Consomme <code>scheduled_tasks</code> depuis SQLite. Écrit dans <code>/data</code>.</p>
-  </div>
-
-  <div class="flow-diagram reveal">
-    <div class="flow-node">
-      <div class="flow-node-icon">💬</div>
-      <div class="flow-node-title">Conversation</div>
-      <div class="flow-node-desc">"rappelle-moi demain à 9h de..."</div>
+    <div class="hstat">
+      <span class="hstat-num">8</span>
+      <span class="hstat-label">Crews spécialisés</span>
     </div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-node">
-      <div class="flow-node-icon">🧠</div>
-      <div class="flow-node-title">SchedulerCrew</div>
-      <div class="flow-node-desc">Interprète, calcule trigger_at, crée la tâche</div>
+    <div class="hstat">
+      <span class="hstat-num">3</span>
+      <span class="hstat-label">Couches mémoire</span>
     </div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-node">
-      <div class="flow-node-icon">🗄️</div>
-      <div class="flow-node-title">scheduled_tasks</div>
-      <div class="flow-node-desc">SQLite + mirror tasks.md</div>
+    <div class="hstat">
+      <span class="hstat-num">5</span>
+      <span class="hstat-label">Routes ML</span>
     </div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-node">
-      <div class="flow-node-icon">⏱️</div>
-      <div class="flow-node-title">scheduler.py</div>
-      <div class="flow-node-desc">Boucle 60s, consomme les tâches dues</div>
-    </div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-node">
-      <div class="flow-node-icon">📄</div>
-      <div class="flow-node-title">briefing.md</div>
-      <div class="flow-node-desc">+ weekly.md + tasks.md</div>
-    </div>
-  </div>
-
-  <div class="sched-grid reveal" style="margin-top:40px;">
-    <div class="sched-card system">
-      <span class="sched-badge">SYSTÈME · quotidien</span>
-      <div class="sched-title">🌅 Morning Briefing</div>
-      <div class="sched-desc">Déclenché chaque matin à <code>BRIEFING_TIME</code> (défaut 07:30). Compile le calendrier du jour, la dernière session et les points clés de <code>memory.md</code> en un document Markdown structuré.</div>
-      <div class="sched-code">→ /data/briefing.md<br>cron: daily 07:30</div>
-    </div>
-    <div class="sched-card system">
-      <span class="sched-badge">SYSTÈME · lundi</span>
-      <div class="sched-title">📆 Résumé Hebdomadaire</div>
-      <div class="sched-desc">Chaque lundi à <code>WEEKLY_TIME</code> (défaut 08:00). Compile les événements de la semaine passée, les sessions enregistrées et les projets actifs en mémoire.</div>
-      <div class="sched-code">→ /data/weekly.md<br>cron: weekly lundi 08:00</div>
-    </div>
-    <div class="sched-card system">
-      <span class="sched-badge">SYSTÈME · quotidien</span>
-      <div class="sched-title">⚠️ Alertes Deadlines</div>
-      <div class="sched-desc">Scan calendrier ICS à 07:00. Détecte les événements J-1 et J-3. Injecte un bloc <code>## ⚠️ Alertes deadlines</code> dans <code>briefing.md</code> si des alertes existent.</div>
-      <div class="sched-code">→ injecté dans briefing.md<br>cron: daily 07:00</div>
-    </div>
-    <div class="sched-card user">
-      <span class="sched-badge">UTILISATEUR · one-shot</span>
-      <div class="sched-title">🔔 Rappels one-shot</div>
-      <div class="sched-desc">"Rappelle-moi demain à 9h de relire mes notes." → SchedulerCrew calcule le <code>trigger_at</code> ISO depuis la date courante. Injecté dans <code>briefing.md</code> du jour J.</div>
-      <div class="sched-code">trigger_at: 2026-03-06T09:00:00<br>action: reminder</div>
-    </div>
-    <div class="sched-card user">
-      <span class="sched-badge">UTILISATEUR · récurrent</span>
-      <div class="sched-title">🔁 Tâches récurrentes</div>
-      <div class="sched-desc">"Chaque lundi, génère un résumé de mes projets." → <code>cron_expr = "weekly lundi 08:00"</code>. Après exécution, <code>reschedule()</code> calcule automatiquement le prochain <code>next_run</code>.</div>
-      <div class="sched-code">cron: weekly lundi 08:00<br>reschedule() après chaque run</div>
-    </div>
-    <div class="sched-card output">
-      <span class="sched-badge">SORTIE · /data</span>
-      <div class="sched-title">📋 tasks.md — miroir humain</div>
-      <div class="sched-desc">Miroir lisible de <code>scheduled_tasks</code>. Mis à jour à chaque create/cancel/reschedule. Sections Système / Récurrentes / One-shot. Icônes <code>[ ]</code> <code>[x]</code> <code>[↻]</code> <code>[!]</code>.</div>
-      <div class="sched-code">→ /data/tasks.md<br>sync à chaque write DB</div>
-    </div>
-  </div>
-</div>
-</div>
-
-<div class="divider"></div>
-
-<!-- DB TABLE scheduled_tasks -->
-<div class="db-section" id="db">
-<div>
-  <div class="reveal">
-    <span class="section-label">Base de données · v9</span>
-    <h2 class="section-title">11 tables.<br>1 ajoutée cette session.</h2>
-    <p class="section-desc"><code>scheduled_tasks</code> complète le schéma existant. Gère les tâches système permanentes, les rappels one-shot utilisateur et les tâches récurrentes avec calcul automatique de <code>next_run</code>.</p>
-  </div>
-  <div class="db-tables reveal">
-    <div class="db-table">
-      <div class="db-table-header">
-        <span class="db-table-name">scheduled_tasks</span>
-        <span class="db-table-badge new">NEW · v9</span>
-      </div>
-      <div class="db-col"><span class="db-col-name">id</span><span class="db-col-type">TEXT PK</span><span class="db-col-desc">Hash court — sys_briefing, sys_weekly, usr_a3f7…</span></div>
-      <div class="db-col"><span class="db-col-name">type</span><span class="db-col-type">TEXT</span><span class="db-col-desc">one_shot | recurring | system</span></div>
-      <div class="db-col"><span class="db-col-name">action</span><span class="db-col-type">TEXT</span><span class="db-col-desc">briefing | weekly | deadline_alert | reminder | summary</span></div>
-      <div class="db-col"><span class="db-col-name">payload</span><span class="db-col-type">TEXT JSON</span><span class="db-col-desc">{"message": "texte du rappel"} — paramètres libres</span></div>
-      <div class="db-col"><span class="db-col-name">trigger_at</span><span class="db-col-type">DATETIME</span><span class="db-col-desc">one_shot : datetime ISO d'exécution unique</span></div>
-      <div class="db-col"><span class="db-col-name">cron_expr</span><span class="db-col-type">TEXT</span><span class="db-col-desc">"daily 07:30" | "weekly lundi 08:00"</span></div>
-      <div class="db-col"><span class="db-col-name">status</span><span class="db-col-type">TEXT</span><span class="db-col-desc">pending | done | cancelled | error</span></div>
-      <div class="db-col"><span class="db-col-name">next_run</span><span class="db-col-type">DATETIME</span><span class="db-col-desc">Précalculé par compute_next_run() après chaque reschedule</span></div>
-      <div class="db-col"><span class="db-col-name">last_run</span><span class="db-col-type">DATETIME</span><span class="db-col-desc">Horodatage de la dernière exécution</span></div>
-      <div class="db-col"><span class="db-col-name">error_msg</span><span class="db-col-type">TEXT</span><span class="db-col-desc">Dernier message d'erreur si status = error</span></div>
-    </div>
-    <div class="db-table">
-      <div class="db-table-header">
-        <span class="db-table-name">Tables existantes</span>
-        <span class="db-table-badge">10 tables · inchangées</span>
-      </div>
-      <div class="db-col"><span class="db-col-name">chunks</span><span class="db-col-type">mémoire</span><span class="db-col-desc">Chunks mémoire personnelle — importance_weight, category</span></div>
-      <div class="db-col"><span class="db-col-name">embeddings</span><span class="db-col-type">mémoire</span><span class="db-col-desc">Vecteurs 768d float32 (nomic-embed-text)</span></div>
-      <div class="db-col"><span class="db-col-name">chunks_fts</span><span class="db-col-type">mémoire</span><span class="db-col-desc">Index FTS5 full-text — unicode61</span></div>
-      <div class="db-col"><span class="db-col-name">sessions / session_facts</span><span class="db-col-type">sessions</span><span class="db-col-desc">Historique des sessions + faits extraits</span></div>
-      <div class="db-col"><span class="db-col-name">file_state</span><span class="db-col-type">sync</span><span class="db-col-desc">Détection des éditions manuelles de memory.md</span></div>
-      <div class="db-col"><span class="db-col-name">documents / doc_chunks</span><span class="db-col-type">docs</span><span class="db-col-desc">PDF, DOCX, TXT, code — ingestion Phase 2</span></div>
-      <div class="db-col"><span class="db-col-name">doc_embeddings / doc_chunks_fts</span><span class="db-col-type">docs</span><span class="db-col-desc">Vectoriel + FTS5 sur les documents ingérés</span></div>
-      <div class="db-col"><span class="db-col-name">curiosity_skipped</span><span class="db-col-type">curiosity</span><span class="db-col-desc">Questions CuriosityCrew refusées — ne plus reproposer</span></div>
-    </div>
-  </div>
-</div>
-</div>
-
-<div class="divider"></div>
-
-<!-- BUGS SESSION v9 -->
-<div class="session-section" id="session">
-<div>
-  <div class="reveal">
-    <span class="section-label">Session v9 · 4 mars 2026</span>
-    <h2 class="section-title">5 bugs réglés.<br>Scheduler complet.</h2>
-    <p class="section-desc">Calendrier RRULE, temporal reasoning, pre-fetch calendrier, scheduling système + utilisateur — et tous les chemins read-only corrigés.</p>
-  </div>
-
-  <div class="session-grid reveal">
-
-    <div class="sess-card fix">
-      <span class="sess-badge">BUG #43 · ICS</span>
-      <div class="sess-title">Récurrences ICS ignorées — 2 événements au lieu de 20</div>
-      <div class="sess-cause"><code>get_upcoming_events()</code> lisait <code>DTSTART</code> brut. Les événements récurrents (<code>RRULE:FREQ=WEEKLY;BYDAY=TH</code>) avaient un <code>DTSTART</code> en septembre 2025 — jamais dans la fenêtre "aujourd'hui+14j".</div>
-      <div class="sess-fix">Expansion RRULE manuelle native — FREQ=WEEKLY/DAILY, BYDAY, UNTIL, COUNT, EXDATE. Fallback <code>recurring_ical_events</code> si disponible. Déduplication via (uid, date).</div>
-    </div>
-
-    <div class="sess-card fix">
-      <span class="sess-badge">BUG #44-45 · Banner</span>
-      <div class="sess-title">Bannière et greeting affichaient 3 jours d'événements</div>
-      <div class="sess-cause"><code>format_startup_banner()</code> affichait les événements passés + 14 jours futurs. Le greeting du matin listait tous les événements des 3 prochains jours.</div>
-      <div class="sess-fix">Banner → <code>days_until == 0</code> uniquement. Greeting → aujourd'hui + demain uniquement, suppression du bloc <code>urgent_soon</code>.</div>
-    </div>
-
-    <div class="sess-card fix">
-      <span class="sess-badge">BUG #46 · Temporal</span>
-      <div class="sess-title">LLM ne comprenait pas "prochaine session après aujourd'hui"</div>
-      <div class="sess-cause"><code>format_events_for_prompt()</code> affichait <code>[Dans 2 jours]</code> sans date ISO. Le LLM ne pouvait pas calculer "la prochaine occurrence après aujourd'hui".</div>
-      <div class="sess-fix">Format enrichi : <code>2026-03-06 (jeudi)</code>. Instructions explicites dans <code>conversation_tasks.yaml</code> : "pour prochaine session X, chercher première occurrence dont date &gt; aujourd'hui".</div>
-    </div>
-
-    <div class="sess-card fix">
-      <span class="sess-badge">BUG #47 · Iterator</span>
-      <div class="sess-title">"Maximum iterations reached" sur toutes les questions calendrier</div>
-      <div class="sess-cause"><code>memory_retriever</code> (max_iter=8) recevait <code>needs_calendar: true</code> → appelait <code>GetCalendarTool</code> → reformatait JSON → retry → explosion avant toute réponse.</div>
-      <div class="sess-fix">Pré-fetch calendrier dans <code>main.py</code> avant le kickoff CrewAI. <code>calendar_context</code> injecté directement dans <code>base_inputs</code>. Instruction "n'appelle PAS get_calendar_events" dans le task YAML.</div>
-    </div>
-
-    <div class="sess-card fix">
-      <span class="sess-badge">BUG #48 · Read-only FS</span>
-      <div class="sess-title">uncertain_cases.jsonl écrit dans /app — filesystem read-only</div>
-      <div class="sess-cause"><code>_UNCERTAIN_LOG = Path(__file__).parent / "uncertain_cases.jsonl"</code> pointait vers <code>/app/src/Mnemo/</code> — monté read-only dans Docker. Même problème pour <code>router_model.joblib</code>, <code>training_data.jsonl</code>.</div>
-      <div class="sess-fix">Tous les fichiers de données redirigés vers <code>Path("...").resolve()</code> relatif à WORKDIR <code>/data</code>. <code>router_model.joblib</code> : cherche d'abord dans <code>/data</code>, fallback <code>/app</code>.</div>
-    </div>
-
-    <div class="sess-card feat">
-      <span class="sess-badge">FEAT · Scheduler</span>
-      <div class="sess-title">Service scheduler complet — 4 actions, boucle 60s</div>
-      <div class="sess-cause">Aucun service de planification n'existait. Les tâches différées ("rappelle-moi demain") n'étaient pas possibles.</div>
-      <div class="sess-fix"><code>scheduler.py</code> service Docker séparé. <code>tools/scheduler_tasks.py</code> : CRUD SQLite + <code>compute_next_run()</code> + mirror <code>tasks.md</code> + <code>bootstrap_system_tasks()</code>. Actions : briefing / weekly / deadline_alert / reminder.</div>
-    </div>
-
-    <div class="sess-card feat">
-      <span class="sess-badge">FEAT · SchedulerCrew</span>
-      <div class="sess-title">SchedulerCrew — du langage naturel à la DB</div>
-      <div class="sess-cause">Le stub <code>SchedulerCrew</code> retournait "non implémenté". Impossible de créer des rappels depuis la conversation.</div>
-      <div class="sess-fix">Agent dédié + prompt structuré : détecte one_shot/recurring, calcule trigger_at ou cron_expr, parse le JSON de retour, appelle <code>create_task()</code> ou <code>cancel_task()</code>, retourne une confirmation en français naturel.</div>
-    </div>
-
-    <div class="sess-card arch">
-      <span class="sess-badge">ARCH · Routing</span>
-      <div class="sess-title">Détection scheduler — 20 keywords + arbitrage post-LLM</div>
-      <div class="sess-cause">Les messages type "rappelle-moi demain" étaient routés vers <code>conversation</code> — le LLM répondait mais ne créait aucune tâche.</div>
-      <div class="sess-fix"><code>_detect_scheduler_intent()</code> : 20 keywords (rappelle-moi, planifie, chaque lundi…). Arbitrage post-LLM : si LLM dit conversation et keywords détectent scheduler → correction. Seuil ML 0.75 vs 0.92 pour shell.</div>
-    </div>
-
-    <div class="sess-card feat">
-      <span class="sess-badge">FEAT · DX</span>
-      <div class="sess-title">mnemo.sh — raccourci de lancement</div>
-      <div class="sess-cause">Lancer Mnemo nécessitait de mémoriser les commandes <code>docker compose run --rm</code>. Friction à chaque session.</div>
-      <div class="sess-fix"><code>mnemo.sh</code> à la racine. Commandes : run / scheduler / stop / briefing / weekly / deadline / logs / ingest / status / help. Tip WSL2 : alias <code>mnemo</code> généré dans <code>install.sh</code>.</div>
-    </div>
-
-  </div>
-</div>
-</div>
-
-<div class="divider"></div>
-
-<!-- FICHIERS MODIFIÉS -->
-<section>
-  <div class="reveal">
-    <span class="section-label">Livrables · Session v9</span>
-    <h2 class="section-title">14 fichiers.<br>6 nouveaux.</h2>
-  </div>
-  <div class="files-grid reveal">
-    <div class="file-card">
-      <div class="file-name">scheduler.py</div>
-      <div class="file-desc">Boucle 60s, 4 actions (briefing/weekly/deadline/reminder), dispatch depuis DB, déclenchement manuel --now.</div>
-      <span class="file-tag new">NEW</span>
-    </div>
-    <div class="file-card">
-      <div class="file-name">tools/scheduler_tasks.py</div>
-      <div class="file-desc">CRUD scheduled_tasks, compute_next_run(), bootstrap_system_tasks(), mirror tasks.md.</div>
-      <span class="file-tag new">NEW</span>
-    </div>
-    <div class="file-card">
-      <div class="file-name">Dockerfile.scheduler</div>
-      <div class="file-desc">Image dédiée scheduler — même sécurité que mnemo : non-root, read-only, cap_drop: ALL.</div>
-      <span class="file-tag new">NEW</span>
-    </div>
-    <div class="file-card">
-      <div class="file-name">config/briefing_agents.yaml<br>config/briefing_tasks.yaml</div>
-      <div class="file-desc">Agent morning briefing — 3 sections fixes, règles strictes anti-répétition, anti-fences.</div>
-      <span class="file-tag new">NEW</span>
-    </div>
-    <div class="file-card">
-      <div class="file-name">config/scheduler_agents.yaml<br>config/scheduler_tasks_config.yaml</div>
-      <div class="file-desc">Agent planification — détecte one_shot/recurring, calcule trigger_at/cron_expr, gère les annulations.</div>
-      <span class="file-tag new">NEW</span>
-    </div>
-    <div class="file-card">
-      <div class="file-name">mnemo.sh</div>
-      <div class="file-desc">Raccourci CLI : run / scheduler / stop / briefing / weekly / deadline / logs / ingest / status.</div>
-      <span class="file-tag new">NEW</span>
-    </div>
-    <div class="file-card">
-      <div class="file-name">crew.py</div>
-      <div class="file-desc">BriefingCrew + SchedulerCrew implémentés (plus de stubs). 8 crews actifs.</div>
-      <span class="file-tag mod">MODIFIÉ</span>
-    </div>
-    <div class="file-card">
-      <div class="file-name">main.py</div>
-      <div class="file-desc">Pré-fetch calendrier, _detect_scheduler_intent(), arbitrage routing, _show_briefing_if_fresh(), chemins /data.</div>
-      <span class="file-tag mod">MODIFIÉ</span>
-    </div>
-    <div class="file-card">
-      <div class="file-name">tools/calendar_tools.py</div>
-      <div class="file-desc">_expand_rrule() RRULE natif, format_events_for_prompt() avec dates ISO + jour FR.</div>
-      <span class="file-tag mod">MODIFIÉ</span>
-    </div>
-    <div class="file-card">
-      <div class="file-name">init_db.py</div>
-      <div class="file-desc">Table scheduled_tasks ajoutée dans CREATE et migrate_db().</div>
-      <span class="file-tag mod">MODIFIÉ</span>
-    </div>
-    <div class="file-card">
-      <div class="file-name">docker-compose.yml</div>
-      <div class="file-desc">Service mnemo-scheduler ajouté — volume /data partagé, restart: on-failure:3, DATA_PATH=/data forcé.</div>
-      <span class="file-tag mod">MODIFIÉ</span>
-    </div>
-    <div class="file-card">
-      <div class="file-name">retrain_router.py<br>train_router.py<br>generate_training_data.py</div>
-      <div class="file-desc">Tous les chemins de données redirigés vers DATA_PATH (/data) — plus d'écriture dans /app read-only.</div>
-      <span class="file-tag mod">MODIFIÉ</span>
+    <div class="hstat">
+      <span class="hstat-num">787</span>
+      <span class="hstat-label">Tests passants</span>
     </div>
   </div>
 </section>
 
 <div class="divider"></div>
 
-<!-- PIPELINE -->
-<div class="pipeline-section" id="pipeline">
-<div>
-  <div class="reveal">
-    <span class="section-label">Architecture · Pipeline v9</span>
-    <h2 class="section-title">8 crews.<br>2 services Docker.</h2>
-  </div>
-  <div class="pipeline-flow reveal">
-    <div class="pf-step">
-      <div class="pf-num">01</div>
-      <div class="pf-title">Keywords + ML</div>
-      <div class="pf-desc">Pré-check déterministe avant LLM. Shell (whitelist), Scheduler (20 keywords), ML (TF-IDF+LR).</div>
-      <div class="pf-tags"><span class="pf-tag">0 LLM</span><span class="pf-tag">Python pur</span></div>
-    </div>
-    <div class="pf-step">
-      <div class="pf-num">02</div>
-      <div class="pf-title">Évaluateur</div>
-      <div class="pf-desc">JSON structuré : route, needs_web, needs_calendar, temporal_reference. Pré-fetch calendrier si besoin.</div>
-      <div class="pf-tags"><span class="pf-tag">intent</span><span class="pf-tag">route</span></div>
-    </div>
-    <div class="pf-step">
-      <div class="pf-num">03</div>
-      <div class="pf-title">Router</div>
-      <div class="pf-desc">Dispatche vers le crew selon route. calendar_context injecté avant kickoff si needs_calendar.</div>
-      <div class="pf-tags"><span class="pf-tag">conversation</span><span class="pf-tag">shell</span><span class="pf-tag">scheduler</span></div>
-    </div>
-    <div class="pf-step">
-      <div class="pf-num">04</div>
-      <div class="pf-title">Conversation</div>
-      <div class="pf-desc">Memory retriever + agent principal. Reçoit contexte enrichi : mémoire, docs, web, calendrier.</div>
-      <div class="pf-tags"><span class="pf-tag">RRF</span><span class="pf-tag">retrieval</span></div>
-    </div>
-    <div class="pf-step">
-      <div class="pf-num">05</div>
-      <div class="pf-title">Consolidation</div>
-      <div class="pf-desc">En fin de session : extraction faits, format atomique/narratif, upsert memory.md + SQLite.</div>
-      <div class="pf-tags"><span class="pf-tag">facts[]</span><span class="pf-tag">upsert</span></div>
-    </div>
-    <div class="pf-step new-crew">
-      <div class="pf-num">06</div>
-      <div class="pf-title">Scheduler<br>Crew</div>
-      <div class="pf-desc">Langage naturel → one_shot/recurring → create_task() → scheduled_tasks DB + tasks.md.</div>
-      <div class="pf-tags"><span class="pf-tag">trigger_at</span><span class="pf-tag">cron_expr</span></div>
-    </div>
-    <div class="pf-step new-crew">
-      <div class="pf-num">07</div>
-      <div class="pf-title">Briefing<br>Crew</div>
-      <div class="pf-desc">Appelé par scheduler.py. Compile calendrier + session + mémoire → Markdown structuré en 3 sections.</div>
-      <div class="pf-tags"><span class="pf-tag">briefing.md</span><span class="pf-tag">weekly.md</span></div>
-    </div>
-    <div class="pf-step">
-      <div class="pf-num">08</div>
-      <div class="pf-title">Curiosity<br>Crew</div>
-      <div class="pf-desc">Détection gaps hybride Python+LLM. Questionnaire CLI. Skip DB pour éviter repropositions.</div>
-      <div class="pf-tags"><span class="pf-tag">structural</span><span class="pf-tag">contextual</span></div>
-    </div>
-  </div>
-</div>
-</div>
+<!-- ── Philosophie ──────────────────────────────────────────── -->
+<section id="philosophie">
+  <div class="section-inner reveal">
+    <span class="section-label">Principes fondateurs</span>
+    <h2 class="section-title">Conçu pour durer.<br>Conçu pour vous.</h2>
+    <p class="section-desc">
+      Mnemo n'est pas un wrapper autour d'un LLM cloud.
+      C'est une architecture locale pensée pour la confidentialité,
+      la durabilité et l'autonomie.
+    </p>
 
-<div class="divider"></div>
-
-<!-- DOCKER -->
-<section id="docker">
-  <div class="reveal">
-    <span class="section-label">Docker · v9</span>
-    <h2 class="section-title">2 services.<br>1 volume partagé.</h2>
-    <p class="section-desc">Le scheduler tourne en background dans son propre container. Même sécurité que le service principal. <code>/data</code> est le seul point de contact entre les deux.</p>
-  </div>
-  <div class="docker-grid reveal">
-    <div class="dock-card">
-      <div class="dock-icon">🤖</div>
-      <div class="dock-title">mnemo — service principal</div>
-      <div class="dock-desc">Session interactive CLI. read-only, cap_drop: ALL, uid 1000. Redémarre jamais automatiquement (restart: "no") — session intentionnelle.</div>
-      <div class="dock-code">docker compose run --rm mnemo<br>./mnemo.sh</div>
-    </div>
-    <div class="dock-card">
-      <div class="dock-icon">⏰</div>
-      <div class="dock-title">mnemo-scheduler — service background</div>
-      <div class="dock-desc">Tourne en daemon. Même sécurité (read-only, cap_drop: ALL, uid 1000). Volume /data partagé. <code>DATA_PATH=/data</code> forcé pour éviter résolution depuis WORKDIR.</div>
-      <div class="dock-code">./mnemo.sh scheduler<br>restart: on-failure:3</div>
-    </div>
-    <div class="dock-card">
-      <div class="dock-icon">📁</div>
-      <div class="dock-title">/data — source de vérité partagée</div>
-      <div class="dock-desc">Volume monté dans les deux containers. Contient : memory.db, memory.md, sessions/, briefing.md, weekly.md, tasks.md, uncertain_cases.jsonl, router_model.joblib.</div>
-      <div class="dock-code">volumes: ${DATA_DIR:-./data}:/data</div>
-    </div>
-    <div class="dock-card">
-      <div class="dock-icon">🔧</div>
-      <div class="dock-title">mnemo.sh — interface unifiée</div>
-      <div class="dock-desc">Script shell à la racine. Wraps toutes les commandes Docker. Tip WSL2 généré dans install.sh : alias mnemo pointant vers le script.</div>
-      <div class="dock-code">./mnemo.sh briefing<br>./mnemo.sh logs<br>./mnemo.sh help</div>
+    <div class="phil-grid">
+      <div class="phil-card">
+        <div class="phil-icon">◈</div>
+        <h3 class="phil-card-title">Offline-first</h3>
+        <p class="phil-card-desc">
+          Aucune donnée ne quitte votre machine. Les modèles LLM tournent via Ollama
+          en local. Le seul réseau optionnel : la recherche web, avec confirmation
+          explicite à chaque requête.
+        </p>
+      </div>
+      <div class="phil-card">
+        <div class="phil-icon">◬</div>
+        <h3 class="phil-card-title">Mémoire hybride</h3>
+        <p class="phil-card-desc">
+          Trois couches complémentaires : session JSON pour le court terme,
+          Markdown lisible comme source de vérité, SQLite avec FTS5 + embeddings
+          768d pour la récupération sémantique.
+        </p>
+      </div>
+      <div class="phil-card">
+        <div class="phil-icon">◉</div>
+        <h3 class="phil-card-title">Routing intelligent</h3>
+        <p class="phil-card-desc">
+          Trois niveaux en cascade : keywords déterministes, classificateur ML
+          (scikit-learn, seuils configurables), puis LLM en fallback.
+          Le LLM n'est sollicité que quand c'est nécessaire.
+        </p>
+      </div>
+      <div class="phil-card">
+        <div class="phil-icon">◫</div>
+        <h3 class="phil-card-title">Multi-crew</h3>
+        <p class="phil-card-desc">
+          Chaque type de tâche a son crew dédié : conversation, shell, agenda,
+          planification, briefing, curiosité. Chaque crew est testable et
+          remplaçable indépendamment.
+        </p>
+      </div>
     </div>
   </div>
 </section>
 
 <div class="divider"></div>
 
-<!-- ROADMAP -->
+<!-- ── Mémoire ──────────────────────────────────────────────── -->
+<section id="memoire" class="alt-bg">
+  <div class="section-inner reveal">
+    <span class="section-label">Architecture mémoire</span>
+    <h2 class="section-title">Trois couches.<br>Une source de vérité.</h2>
+    <p class="section-desc">
+      La mémoire de Mnemo est un système à trois niveaux avec fusion hybride.
+      <code style="font-size:0.75rem;color:var(--a5);background:var(--s2);padding:2px 6px;border-radius:3px;">memory.md</code>
+      est la source de vérité — la base de données en est le dérivé indexé.
+    </p>
+
+    <div class="mem-grid">
+      <div class="card c-violet">
+        <span class="card-badge">Court terme</span>
+        <h3 class="card-title">Session JSON</h3>
+        <p class="card-body">
+          Transcription complète de la session en cours.
+          Chaque échange est horodaté et associé à une session_id.
+          Conservé jusqu'à la consolidation en fin de session.
+          <br><br>
+          <code>sessions/session_{id}.json</code>
+        </p>
+      </div>
+      <div class="card c-amber">
+        <span class="card-badge">Long terme · lisible</span>
+        <h3 class="card-title">Memory Markdown</h3>
+        <p class="card-body">
+          Source de vérité humainement lisible. ConsolidationCrew extrait les faits
+          importants et les écrit dans des sections structurées (identité, projets,
+          préférences, décisions…).
+          <br><br>
+          <code>memory.md</code>
+        </p>
+      </div>
+      <div class="card c-teal">
+        <span class="card-badge">Long terme · indexé</span>
+        <h3 class="card-title">SQLite FTS5 + Embeddings</h3>
+        <p class="card-body">
+          Index bi-modal : Full-Text Search (FTS5) pour les mots-clés,
+          vecteurs 768d (nomic-embed-text via Ollama) pour la sémantique.
+          Dérivé de memory.md via <code>sync_markdown_to_db()</code>.
+          <br><br>
+          <code>memory.db</code>
+        </p>
+      </div>
+    </div>
+
+    <div class="rrf-banner">
+      <span class="rrf-title">Retrieval par Reciprocal Rank Fusion</span>
+      <div class="rrf-flow">
+        <span class="rrf-step">FTS5 keyword</span>
+        <span class="rrf-sep">+</span>
+        <span class="rrf-step">cosine similarity</span>
+        <span class="rrf-sep">→</span>
+        <span class="rrf-step">RRF merge</span>
+        <span class="rrf-sep">×</span>
+        <span class="rrf-step">poids catégorie</span>
+        <span class="rrf-sep">×</span>
+        <span class="rrf-step">decay fraîcheur</span>
+        <span class="rrf-sep">→</span>
+        <span class="rrf-step">top-k chunks</span>
+      </div>
+    </div>
+
+    <div class="g-grid-2" style="margin-top:20px;">
+      <div class="card c-bg c-green">
+        <span class="card-badge">Poids catégories</span>
+        <h3 class="card-title">Priorité sémantique</h3>
+        <p class="card-body">
+          identité 1.5× · décision 1.3× · projet 1.2× · préférence 1.1×<br>
+          connaissance 1.0× · historique_session 0.7×
+        </p>
+      </div>
+      <div class="card c-bg c-pink">
+        <span class="card-badge">Fraîcheur</span>
+        <h3 class="card-title">Decay temporel</h3>
+        <p class="card-body">
+          Décroissance exponentielle — demi-vie 30 jours.
+          Poids adaptatif : requête courte → keyword-heavy,
+          requête longue → vector-heavy.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── Pipeline ─────────────────────────────────────────────── -->
+<section id="pipeline">
+  <div class="section-inner reveal">
+    <span class="section-label">Routing des messages</span>
+    <h2 class="section-title">Trois niveaux.<br>Un seul chemin critique.</h2>
+    <p class="section-desc">
+      Chaque message traverse un pipeline en cascade.
+      Le LLM (EvaluationCrew) n'est activé que si les niveaux rapides
+      ne sont pas suffisamment confiants.
+    </p>
+
+    <div class="pipeline-flow">
+      <div class="pf-step">
+        <div class="pf-num">01</div>
+        <h3 class="pf-title">Pre-check ML</h3>
+        <p class="pf-desc">
+          Keywords déterministes + classificateur ML (sklearn pipeline,
+          joblib). Si confiance ≥ seuil, route directe sans LLM.
+        </p>
+        <div class="pf-tags">
+          <span class="pf-tag">shell ≥ 80%</span>
+          <span class="pf-tag">scheduler ≥ 75%</span>
+          <span class="pf-tag">calendar ≥ 92%</span>
+        </div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">02</div>
+        <h3 class="pf-title">EvaluationCrew</h3>
+        <p class="pf-desc">
+          Analyse LLM complète : intent, entités, topics, besoin mémoire,
+          besoin web, clarification, complexité, route cible.
+        </p>
+        <div class="pf-tags">
+          <span class="pf-tag">JSON structuré</span>
+          <span class="pf-tag">fallback conversation</span>
+        </div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">03</div>
+        <h3 class="pf-title">Interceptions</h3>
+        <p class="pf-desc">
+          Trois garde-fous avant l'exécution : clarification utilisateur,
+          confirmation web (query figée), confirmation shell (whitelist).
+        </p>
+        <div class="pf-tags">
+          <span class="pf-tag">needs_clarification</span>
+          <span class="pf-tag">needs_web</span>
+          <span class="pf-tag">shell confirm</span>
+        </div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">04</div>
+        <h3 class="pf-title">_route_message()</h3>
+        <p class="pf-desc">
+          Dispatch vers le crew cible selon la route.
+          web_context injecté dans tous les crews si la recherche a eu lieu.
+        </p>
+        <div class="pf-tags">
+          <span class="pf-tag">5 routes actives</span>
+          <span class="pf-tag">fallback conv</span>
+        </div>
+      </div>
+      <div class="pf-step">
+        <div class="pf-num">05</div>
+        <h3 class="pf-title">Post-session</h3>
+        <p class="pf-desc">
+          En fin de session : ConsolidationCrew extrait les faits,
+          puis CuriosityCrew détecte les lacunes et pose des questions.
+        </p>
+        <div class="pf-tags">
+          <span class="pf-tag">consolidation</span>
+          <span class="pf-tag">curiosité</span>
+          <span class="pf-tag">crash recovery</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── Crews ────────────────────────────────────────────────── -->
+<section id="crews" class="alt-bg">
+  <div class="section-inner reveal">
+    <span class="section-label">Architecture multi-crew</span>
+    <h2 class="section-title">8 spécialistes.<br>Un seul orchestrateur.</h2>
+    <p class="section-desc">
+      Chaque crew est un ensemble d'agents et de tâches isolés,
+      testable indépendamment. Le routing hybride décide lequel activer.
+    </p>
+
+    <div class="crews-grid">
+      <div class="crew-card active">
+        <span class="crew-trigger">route : tout message</span>
+        <h3 class="crew-name">EvaluationCrew</h3>
+        <p class="crew-desc">
+          Analyse l'intent de chaque message et produit un JSON de routing :
+          route, needs_web, needs_clarification, memory_query, complexité…
+        </p>
+      </div>
+      <div class="crew-card active">
+        <span class="crew-trigger">route : conversation</span>
+        <h3 class="crew-name">ConversationCrew</h3>
+        <p class="crew-desc">
+          Récupère la mémoire pertinente (RRF) et génère une réponse
+          contextuelle. Reçoit web_context si une recherche a eu lieu.
+        </p>
+      </div>
+      <div class="crew-card">
+        <span class="crew-trigger">fin de session</span>
+        <h3 class="crew-name">ConsolidationCrew</h3>
+        <p class="crew-desc">
+          Extrait les faits importants de la session. Les écrit dans
+          memory.md par section, puis re-synchronise la base de données.
+        </p>
+      </div>
+      <div class="crew-card">
+        <span class="crew-trigger">post-consolidation</span>
+        <h3 class="crew-name">CuriosityCrew</h3>
+        <p class="crew-desc">
+          Détecte les lacunes dans la mémoire (Python structurel + LLM
+          contextuel). Pose jusqu'à 5 questions pertinentes à l'utilisateur.
+        </p>
+      </div>
+      <div class="crew-card active">
+        <span class="crew-trigger">route : shell</span>
+        <h3 class="crew-name">ShellCrew</h3>
+        <p class="crew-desc">
+          Traduit les demandes en commandes shell. Validation par whitelist
+          + confirmation explicite obligatoire avant toute exécution.
+        </p>
+      </div>
+      <div class="crew-card active">
+        <span class="crew-trigger">route : scheduler</span>
+        <h3 class="crew-name">SchedulerCrew</h3>
+        <p class="crew-desc">
+          Traduit les demandes en tâches planifiées (format JSON multi-tâches).
+          CRUD dans scheduled_tasks SQLite + miroir humain tasks.md.
+        </p>
+      </div>
+      <div class="crew-card">
+        <span class="crew-trigger">scheduler · briefing matinal</span>
+        <h3 class="crew-name">BriefingCrew</h3>
+        <p class="crew-desc">
+          Génère briefing.md (quotidien) et weekly.md (hebdo) depuis
+          le calendrier ICS, les sessions récentes et la mémoire.
+        </p>
+      </div>
+      <div class="crew-card active">
+        <span class="crew-trigger">route : note</span>
+        <h3 class="crew-name">NoteWriterCrew</h3>
+        <p class="crew-desc">
+          Écrit et modifie des notes directement dans memory.md
+          via FileWriterTool. Modifications structurées par section.
+        </p>
+      </div>
+      <div class="crew-card stub">
+        <span class="crew-trigger">route : calendar · stub</span>
+        <h3 class="crew-name">CalendarWriteCrew</h3>
+        <p class="crew-desc">
+          Gestion CalDAV en écriture (CRUD événements). Interface définie,
+          implémentation CalDAV en attente. Placeholder retourne un message clair.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── Roadmap ───────────────────────────────────────────────── -->
 <section id="roadmap">
-  <div class="reveal">
-    <span class="section-label">Roadmap</span>
-    <h2 class="section-title">Où on en est.</h2>
-  </div>
-  <div class="roadmap-track reveal">
-    <div class="rm-phase rm-done">
-      <div class="rm-phase-num">0</div>
-      <span class="rm-status">✓ Complète</span>
-      <div class="rm-title">Fondations</div>
-      <ul class="rm-items">
-        <li class="done">Mémoire hybride FTS5 + vectoriel</li>
-        <li class="done">RRF · importance · freshness</li>
-        <li class="done">CTRL+C → consolidation</li>
-        <li class="done">Ollama Docker · num_ctx 8192</li>
-      </ul>
-    </div>
-    <div class="rm-phase rm-done">
-      <div class="rm-phase-num">1</div>
-      <span class="rm-status">✓ Complète</span>
-      <div class="rm-title">Stabilisation</div>
-      <ul class="rm-items">
-        <li class="done">502 tests</li>
-        <li class="done">6 bugs corrigés</li>
-        <li class="done">Architecture validée</li>
-      </ul>
-    </div>
-    <div class="rm-phase rm-done">
-      <div class="rm-phase-num">2</div>
-      <span class="rm-status">✓ Complète</span>
-      <div class="rm-title">Perception</div>
-      <ul class="rm-items">
-        <li class="done">Ingestion PDF/DOCX/TXT/code</li>
-        <li class="done">CuriosityCrew hybride</li>
-        <li class="done">Conscience temporelle + ICS</li>
-        <li class="done">Web SearXNG + DDG</li>
-        <li class="done">Docker · install.sh</li>
-      </ul>
-    </div>
-    <div class="rm-phase rm-active">
-      <div class="rm-phase-num">3</div>
-      <span class="rm-status">◐ En cours</span>
-      <div class="rm-title">Action</div>
-      <ul class="rm-items">
-        <li class="done">Router 4 routes + ML</li>
-        <li class="done">Docker non-root · read-only</li>
-        <li class="done">ShellCrew + whitelist</li>
-        <li class="done">Scheduler + BriefingCrew</li>
-        <li class="done">SchedulerCrew (NL → DB)</li>
-        <li class="done">Alertes deadlines J-1/J-3</li>
-        <li class="done">mnemo.sh</li>
-        <li>File management</li>
-        <li>Agenda CRUD CalDAV</li>
-        <li>Dashboard FastAPI</li>
-      </ul>
-    </div>
-    <div class="rm-phase rm-next">
-      <div class="rm-phase-num">4</div>
-      <span class="rm-status">⬜ Planifiée</span>
-      <div class="rm-title">Interfaces</div>
-      <ul class="rm-items">
-        <li>REST API (FastAPI)</li>
-        <li>Local TTS / STT</li>
-        <li>Raspberry PI</li>
-        <li>Unity Integration</li>
-      </ul>
-    </div>
-    <div class="rm-phase rm-next">
-      <div class="rm-phase-num">5</div>
-      <span class="rm-status">⬜ Planifiée</span>
-      <div class="rm-title">Proactivité</div>
-      <ul class="rm-items">
-        <li>Suggestions contextualisées</li>
-        <li>Détection de routines</li>
-        <li>Compression memory.md</li>
-        <li>Multi-profils</li>
-      </ul>
+  <div class="section-inner reveal">
+    <span class="section-label">Développement</span>
+    <h2 class="section-title">De la mémoire<br>à l'autonomie.</h2>
+    <p class="section-desc">
+      Cinq phases. Les trois premières sont complètes ou en cours.
+      L'objectif final : un assistant capable d'agir et d'apprendre
+      en continu, sans intervention manuelle.
+    </p>
+
+    <div class="roadmap-track">
+      <div class="rm-phase rm-done">
+        <span class="rm-status">Complet</span>
+        <div class="rm-phase-num">0</div>
+        <h3 class="rm-title">Mémoire hybride</h3>
+        <ul class="rm-items">
+          <li>JSON + Markdown + SQLite</li>
+          <li>FTS5 + embeddings 768d</li>
+          <li>Reciprocal Rank Fusion</li>
+          <li>Staleness detection</li>
+          <li>Decay temporel</li>
+        </ul>
+      </div>
+      <div class="rm-phase rm-done">
+        <span class="rm-status">Complet</span>
+        <div class="rm-phase-num">1</div>
+        <h3 class="rm-title">Tests &amp; qualité</h3>
+        <ul class="rm-items">
+          <li>Tests N1/N2/N3</li>
+          <li>CONTRIBUTING.md</li>
+          <li>ConsolidationCrew</li>
+          <li>CuriosityCrew</li>
+          <li>Crash recovery</li>
+        </ul>
+      </div>
+      <div class="rm-phase rm-done">
+        <span class="rm-status">Complet</span>
+        <div class="rm-phase-num">2</div>
+        <h3 class="rm-title">Ingestion &amp; web</h3>
+        <ul class="rm-items">
+          <li>PDF, DOCX, TXT, code</li>
+          <li>Calendrier ICS + RRULE</li>
+          <li>SearXNG + DuckDuckGo</li>
+          <li>Déduplication MD5</li>
+          <li>Audit log web</li>
+        </ul>
+      </div>
+      <div class="rm-phase rm-active">
+        <span class="rm-status">En cours</span>
+        <div class="rm-phase-num">3</div>
+        <h3 class="rm-title">Action locale</h3>
+        <ul class="rm-items">
+          <li class="done">ShellCrew + whitelist</li>
+          <li class="done">SchedulerCrew multi-tâches</li>
+          <li class="done">BriefingCrew + scheduler</li>
+          <li class="done">NoteWriterCrew</li>
+          <li class="wip">Fichiers (move, rename)</li>
+          <li class="pending">CalDAV CRUD</li>
+          <li class="pending">Dashboard web</li>
+        </ul>
+      </div>
+      <div class="rm-phase rm-next">
+        <span class="rm-status">Planifié</span>
+        <div class="rm-phase-num">4</div>
+        <h3 class="rm-title">Autonomie</h3>
+        <ul class="rm-items">
+          <li>Apprentissage actif</li>
+          <li>Routing auto-affiné</li>
+          <li>Proactivité planifiée</li>
+          <li>Multi-device sync</li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
 
 <div class="divider"></div>
 
+<!-- ── Patch note ────────────────────────────────────────────── -->
+<section id="patchnote" class="alt-bg">
+  <div class="section-inner reveal">
+    <div class="pn-header">
+      <div>
+        <span class="section-label">Journal de développement</span>
+        <h2 class="section-title">Session du 07 mars 2026</h2>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="pn-date">v9 · 07-03-2026</span>
+        <span class="pn-tag">787 tests passants</span>
+      </div>
+    </div>
+
+    <div class="pn-stats">
+      <div class="pn-stat">
+        <span class="pn-stat-n">787</span>
+        <span class="pn-stat-l">Tests passants</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">31</span>
+        <span class="pn-stat-l">Régressions corrigées</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">5</span>
+        <span class="pn-stat-l">Routes ML</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">2</span>
+        <span class="pn-stat-l">Nouveaux crews</span>
+      </div>
+    </div>
+
+    <div class="g-grid-2">
+      <div class="card c-violet">
+        <span class="card-badge">Nouveau</span>
+        <h3 class="card-title">FileWriterTool</h3>
+        <p class="card-body">
+          Outil d'écriture directe dans memory.md et dans les notes.
+          Opérations supportées : <code>append_section</code>, <code>replace_section</code>,
+          <code>create_file</code>. Validation de chemin intégrée pour éviter
+          les écritures hors du répertoire <code>/data</code>.
+        </p>
+      </div>
+      <div class="card c-pink">
+        <span class="card-badge">Nouveau crew</span>
+        <h3 class="card-title">NoteWriterCrew</h3>
+        <p class="card-body">
+          Crew dédié à la prise de notes structurée. Utilise FileWriterTool
+          pour écrire dans memory.md par section. Route <code>note</code>
+          ajoutée au pipeline. Intégré dans le routing ML à 5 classes.
+        </p>
+      </div>
+      <div class="card c-amber">
+        <span class="card-badge">ML · routing</span>
+        <h3 class="card-title">Modèle 5 routes</h3>
+        <p class="card-body">
+          Le classificateur ML passe de 4 à 5 routes :
+          <code>conversation</code>, <code>shell</code>, <code>scheduler</code>,
+          <code>calendar</code>, <code>note</code>.
+          Ré-entraînement du pipeline sklearn, mise à jour des seuils
+          et du fichier <code>router_model.joblib</code>.
+        </p>
+      </div>
+      <div class="card c-green">
+        <span class="card-badge">Tests · N1/N2/N3</span>
+        <h3 class="card-title">Tour de tests complet</h3>
+        <p class="card-body">
+          787 tests verts sur l'ensemble du projet.
+          31 régressions identifiées et corrigées (FileWriterTool, NoteWriterCrew,
+          routes ML, mocks shell, calendar_tools).
+          Nouveaux fichiers : <code>test_note_writer.py</code>, <code>test_file_writer.py</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="g-grid-3" style="margin-top:10px;">
+      <div class="card c-bg c-teal">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">calendar_tools.py</h3>
+        <p class="card-body">
+          Correction de l'expansion RRULE pour les règles WEEKLY avec BYDAY.
+          Gestion des EXDATE et COUNT dans l'expansion manuelle.
+        </p>
+        <p class="card-fix">Tests calendar : 100% pass</p>
+      </div>
+      <div class="card c-bg c-red">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">Shell mocks</h3>
+        <p class="card-body">
+          Mise à jour des mocks <code>ShellCrew.run()</code> dans
+          test_router.py et test_session_cycle.py pour le nouveau
+          format d'inputs avec <code>web_context</code>.
+        </p>
+        <p class="card-fix">Tests shell : 100% pass</p>
+      </div>
+      <div class="card c-bg c-violet">
+        <span class="card-badge">Refactor</span>
+        <h3 class="card-title">Landing page</h3>
+        <p class="card-body">
+          Refactorisation CSS : de 349 lignes à ~270 lignes.
+          Système de cards générique avec custom properties CSS
+          (<code>--cc</code>, <code>--cb</code>) remplaçant 6 blocs dupliqués.
+        </p>
+        <p class="card-fix">HTML réécrit comme présentation projet</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── Footer ───────────────────────────────────────────────── -->
 <footer>
   <div class="footer-logo">Mnemo</div>
-  <div class="footer-sub">Agent mémoire personnel · 100% local · 100% privé · session 2026-03-04 v9 · Phase 3 ◐</div>
+  <p class="footer-sub">Assistant personnel local · Offline-first · Phase 3</p>
   <div class="footer-stack">
-    <span class="fs-tag">CrewAI[tools] ≥ 0.130</span>
-    <span class="fs-tag">Ollama ≥ 0.4</span>
-    <span class="fs-tag">litellm</span>
-    <span class="fs-tag">SQLite · FTS5 · 11 tables</span>
-    <span class="fs-tag">nomic-embed-text · 768d</span>
-    <span class="fs-tag">icalendar ≥ 6.0 · RRULE</span>
-    <span class="fs-tag">pypdf · python-docx</span>
-    <span class="fs-tag">numpy ≥ 1.26</span>
-    <span class="fs-tag">scikit-learn · TF-IDF+LR</span>
-    <span class="fs-tag">SearXNG · ddgs</span>
-    <span class="fs-tag">Docker Compose · 2 services</span>
-    <span class="fs-tag">cap_drop: ALL · read-only</span>
+    <span class="fs-tag">CrewAI</span>
+    <span class="fs-tag">Ollama</span>
+    <span class="fs-tag">SQLite FTS5</span>
+    <span class="fs-tag">nomic-embed-text</span>
+    <span class="fs-tag">scikit-learn</span>
+    <span class="fs-tag">Docker</span>
     <span class="fs-tag">Python 3.12</span>
+    <span class="fs-tag">SearXNG</span>
+    <span class="fs-tag">DuckDuckGo</span>
+    <span class="fs-tag">icalendar</span>
+    <span class="fs-tag">pdfplumber</span>
+    <span class="fs-tag">uv</span>
   </div>
 </footer>
 
+<!-- ── Scroll reveal ─────────────────────────────────────────── -->
 <script>
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.08 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
+
 </body>
 </html>
