@@ -462,9 +462,123 @@
 <!-- ── Patch note ────────────────────────────────────────────── -->
 <section id="patchnote" class="alt-bg">
   <div class="section-inner reveal">
+
+    <!-- ── v10 · 08 mars 2026 ──────────────────────────────── -->
     <div class="pn-header">
       <div>
         <span class="section-label">Journal de développement</span>
+        <h2 class="section-title">Session du 07 mars 2026</h2>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="pn-date">v10 · 07-03-2026</span>
+        <span class="pn-tag">38 nouveaux tests</span>
+      </div>
+    </div>
+
+    <div class="pn-stats">
+      <div class="pn-stat">
+        <span class="pn-stat-n">38</span>
+        <span class="pn-stat-l">Nouveaux tests</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">10</span>
+        <span class="pn-stat-l">Routes API</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">2</span>
+        <span class="pn-stat-l">Vues calendrier</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">1</span>
+        <span class="pn-stat-l">Crew implémenté</span>
+      </div>
+    </div>
+
+    <div class="g-grid-2">
+      <div class="card c-violet">
+        <span class="card-badge">Nouveau crew</span>
+        <h3 class="card-title">CalendarWriteCrew</h3>
+        <p class="card-body">
+          Implémentation complète du stub. Trois fonctions write ICS locales :
+          <code>add_event</code>, <code>update_event</code>, <code>delete_event</code>.
+          Confirmation interactive obligatoire avant toute modification ou suppression
+          (commande figée après kickoff). Sources URL distantes refusées en écriture.
+        </p>
+      </div>
+      <div class="card c-teal">
+        <span class="card-badge">Nouveau</span>
+        <h3 class="card-title">Dashboard FastAPI</h3>
+        <p class="card-body">
+          <code>api.py</code> : 10 routes REST — health, message, memory, sessions,
+          et calendrier CRUD (GET / POST / PUT / DELETE). Pipeline web sans stdin :
+          shell bloqué, web auto-refusé, clarification ignorée.
+          Service Docker <code>mnemo-api</code> exposé sur
+          <code>DASHBOARD_HOST:DASHBOARD_PORT</code>.
+        </p>
+      </div>
+      <div class="card c-pink">
+        <span class="card-badge">Nouveau</span>
+        <h3 class="card-title">Frontend SPA</h3>
+        <p class="card-body">
+          Dashboard vanilla JS, 4 tabs : Chat, Mémoire, Sessions, Calendrier.
+          Sessions affichées en bulles de conversation. Calendrier avec CRUD intégré
+          (modal formulaire, boutons ✎ / ✕ au hover). Vue Liste et Vue Semaine
+          (grille 7 j × 7h–22h) avec navigation ← Aujourd'hui →.
+        </p>
+      </div>
+      <div class="card c-amber">
+        <span class="card-badge">TODO</span>
+        <h3 class="card-title">Refactorisation → React</h3>
+        <p class="card-body">
+          La SPA vanilla approche 1&nbsp;200 lignes de code imbriqué.
+          Migration prévue vers React.js pour un scaling propre :
+          composants réutilisables, état centralisé, fin du code spaghetti.
+          Déclencheur : prochaine feature majeure frontend.
+        </p>
+      </div>
+    </div>
+
+    <div class="g-grid-3" style="margin-top:10px;">
+      <div class="card c-bg c-red">
+        <span class="card-badge">Fix critique</span>
+        <h3 class="card-title">Durées calendrier</h3>
+        <p class="card-body">
+          <code>_make_event_dict</code> calculait <code>DTEND − ev_datetime</code>
+          (date de l'occurrence reconstruite), produisant des durées négatives
+          pour les événements récurrents. Corrigé en <code>DTEND − DTSTART</code>
+          depuis le composant original.
+        </p>
+        <p class="card-fix">Vue semaine : hauteurs des blocs désormais correctes</p>
+      </div>
+      <div class="card c-bg c-violet">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">Sessions : bulles vides</h3>
+        <p class="card-body">
+          Le rendu utilisait <code>m.user_message</code> / <code>m.agent_response</code>
+          alors que le JSON de session stocke des objets <code>{role, content}</code>
+          individuels. Corrigé par un <code>map</code> basé sur <code>m.role</code>.
+        </p>
+        <p class="card-fix">Bulles de conversation correctement peuplées</p>
+      </div>
+      <div class="card c-bg c-teal">
+        <span class="card-badge">Tests · N1/N2/N3</span>
+        <h3 class="card-title">test_calendar_write.py</h3>
+        <p class="card-body">
+          38 tests couvrant les fonctions write ICS et <code>CalendarWriteCrew.run()</code>.
+          N1 : fonctions pures. N2 : écriture réelle sur fichier ICS temporaire.
+          N3 : crew avec <code>kickoff()</code> mocké (create, delete confirmé/annulé, update, cas dégradés).
+        </p>
+        <p class="card-fix">38 / 38 · 55 s</p>
+      </div>
+    </div>
+
+    <!-- ── Séparateur sessions ──────────────────────────────── -->
+    <div style="border-top:1px solid var(--border);margin:52px 0 44px;opacity:0.4;"></div>
+
+    <!-- ── v9 · 06 mars 2026 ───────────────────────────────── -->
+    <div class="pn-header">
+      <div>
+        <span class="section-label">Session précédente</span>
         <h2 class="section-title">Session du 06 mars 2026</h2>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
