@@ -463,10 +463,131 @@
 <section id="patchnote" class="alt-bg">
   <div class="section-inner reveal">
 
-    <!-- ── v10 · 08 mars 2026 ──────────────────────────────── -->
+    <!-- ── v11 · 09 mars 2026 ──────────────────────────────── -->
     <div class="pn-header">
       <div>
         <span class="section-label">Journal de développement</span>
+        <h2 class="section-title">Session du 08 mars 2026</h2>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="pn-date">v11 · 08-03-2026</span>
+        <span class="pn-tag">7 bugs corrigés</span>
+        <span class="pn-tag">21 exemples ML</span>
+      </div>
+    </div>
+
+    <div class="pn-stats">
+      <div class="pn-stat">
+        <span class="pn-stat-n">7</span>
+        <span class="pn-stat-l">Bugs corrigés</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">21</span>
+        <span class="pn-stat-l">Exemples ML ajoutés</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">2</span>
+        <span class="pn-stat-l">Features ajoutées</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">30s</span>
+        <span class="pn-stat-l">Polling calendrier</span>
+      </div>
+    </div>
+
+    <div class="g-grid-2">
+      <div class="card c-red">
+        <span class="card-badge">Fix critique</span>
+        <h3 class="card-title">Vue semaine décalée d'un jour</h3>
+        <p class="card-body">
+          <code>toISOString().slice(0,10)</code> retourne la date UTC — en GMT+1,
+          les événements du lundi apparaissaient le mardi. Corrigé par un helper
+          <code>_fmtDate(d)</code> basé sur <code>getFullYear</code> /
+          <code>getMonth</code> / <code>getDate</code> (heure locale).
+        </p>
+        <p class="card-fix">Vue semaine alignée avec le fuseau horaire local</p>
+      </div>
+      <div class="card c-red">
+        <span class="card-badge">Fix critique</span>
+        <h3 class="card-title">CalendarWriteCrew — date incorrecte</h3>
+        <p class="card-body">
+          Le LLM résolvait les dates relatives sans ancre ISO explicite, causant
+          des décalages. Injection de <code>today_iso</code> (YYYY-MM-DD) dans
+          <code>crew.py</code> et dans le prompt YAML. Règle ajoutée :
+          si le jour nommé correspond à aujourd'hui, utiliser <code>today_iso</code>
+          directement sans dériver.
+        </p>
+        <p class="card-fix">Dates résolues depuis une référence ISO absolue</p>
+      </div>
+      <div class="card c-violet">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">Routing CalendarWriteCrew — formes directes</h3>
+        <p class="card-body">
+          "Ajoute un événement…" était routé vers <code>ConversationCrew</code>.
+          Ajout de <code>_CALENDAR_WRITE_KEYWORDS</code> et
+          <code>_detect_calendar_write_intent()</code> dans <code>main.py</code>,
+          bypass déterministe identique au pattern shell/scheduler.
+        </p>
+        <p class="card-fix">Demandes calendrier (impératif) routées sans LLM</p>
+      </div>
+      <div class="card c-violet">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">Routing — formes naturelles indirectes</h3>
+        <p class="card-body">
+          "Tu peux me le <em>supprimer du calendrier</em> ?" n'était pas détecté
+          (forme infinitive + lieu, sans impératif). Ajout d'une détection par
+          co-occurrence : verbe d'action (<code>supprimer</code>, <code>retire</code>,
+          <code>annule</code>…) + mot contexte (<code>calendrier</code>,
+          <code>agenda</code>, <code>événement</code>…). 21 nouveaux exemples
+          injectés dans <code>training_data.jsonl</code> + modèle ML ré-entraîné.
+        </p>
+        <p class="card-fix">Toutes les formulations naturelles de suppression/création détectées</p>
+      </div>
+    </div>
+
+    <div class="g-grid-3" style="margin-top:10px;">
+      <div class="card c-bg c-teal">
+        <span class="card-badge">Fix + Feature</span>
+        <h3 class="card-title">Refresh calendrier post-écriture IA</h3>
+        <p class="card-body">
+          Cache Python par processus (CLI ≠ FastAPI) : l'API retournait
+          des données stale jusqu'à 5 min après une écriture CLI.
+          Fix : vérification <code>mtime</code> ICS à chaque GET +
+          polling frontend 30s si l'onglet Calendrier est actif.
+        </p>
+        <p class="card-fix">Événements créés par l'IA visibles en &lt; 30s</p>
+      </div>
+      <div class="card c-bg c-violet">
+        <span class="card-badge">Feature</span>
+        <h3 class="card-title">Bouton ✕ en vue semaine</h3>
+        <p class="card-body">
+          CRUD complet en vue semaine : bouton ✕ rouge au hover à côté du ✎,
+          avec <code>confirm()</code> avant suppression.
+          <code>display:flex</code> via <code>onmouseenter</code> pour les deux
+          boutons côte à côte.
+        </p>
+        <p class="card-fix">Delete accessible directement depuis la vue semaine</p>
+      </div>
+      <div class="card c-bg c-teal">
+        <span class="card-badge">Feature</span>
+        <h3 class="card-title">mnemo.sh — commande <code>services</code></h3>
+        <p class="card-body">
+          <code>./mnemo.sh services</code> démarre <code>mnemo-scheduler</code>
+          et <code>mnemo-api</code> en une seule commande.
+          <code>stop</code> arrête les deux. Ajout de <code>logs-api</code>
+          et de la commande <code>api</code> seule.
+        </p>
+        <p class="card-fix">Démarrage complet de l'environnement en 1 commande</p>
+      </div>
+    </div>
+
+    <!-- ── Séparateur sessions ──────────────────────────────── -->
+    <div style="border-top:1px solid var(--border);margin:52px 0 44px;opacity:0.4;"></div>
+
+    <!-- ── v10 · 08 mars 2026 ──────────────────────────────── -->
+    <div class="pn-header">
+      <div>
+        <span class="section-label">Session précédente</span>
         <h2 class="section-title">Session du 07 mars 2026</h2>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
@@ -578,7 +699,7 @@
     <!-- ── v9 · 06 mars 2026 ───────────────────────────────── -->
     <div class="pn-header">
       <div>
-        <span class="section-label">Session précédente</span>
+        <span class="section-label">Sessions précédentes</span>
         <h2 class="section-title">Session du 06 mars 2026</h2>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
