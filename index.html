@@ -366,12 +366,13 @@
           via FileWriterTool. Modifications structurées par section.
         </p>
       </div>
-      <div class="crew-card stub">
-        <span class="crew-trigger">route : calendar · stub</span>
+      <div class="crew-card active">
+        <span class="crew-trigger">route : calendar</span>
         <h3 class="crew-name">CalendarWriteCrew</h3>
         <p class="crew-desc">
-          Gestion CalDAV en écriture (CRUD événements). Interface définie,
-          implémentation CalDAV en attente. Placeholder retourne un message clair.
+          CRUD complet sur fichier ICS local : créer, modifier, supprimer.
+          Indices numériques (#N) pour le ciblage LLM, résolution UID en Python.
+          Confirmation obligatoire en CLI, bypass automatique en web.
         </p>
       </div>
     </div>
@@ -475,10 +476,265 @@
 <section id="patchnote" class="alt-bg">
   <div class="section-inner reveal">
 
-    <!-- ── v11 · 09 mars 2026 ──────────────────────────────── -->
+    <!-- ── v13 · 10 mars 2026 ──────────────────────────────── -->
     <div class="pn-header">
       <div>
         <span class="section-label">Journal de développement</span>
+        <h2 class="section-title">Session du 10 mars 2026</h2>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="pn-date">v13 · 10-03-2026</span>
+        <span class="pn-tag">CRUD mémoire</span>
+        <span class="pn-tag">Confirmation web interactive</span>
+        <span class="pn-tag">Rappels dashboard</span>
+      </div>
+    </div>
+
+    <div class="pn-stats">
+      <div class="pn-stat">
+        <span class="pn-stat-n">1</span>
+        <span class="pn-stat-l">Composant ConfirmModal</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">2</span>
+        <span class="pn-stat-l">Endpoints ajoutés</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">1</span>
+        <span class="pn-stat-l">Flow web two-step</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">4</span>
+        <span class="pn-stat-l">Fixes &amp; améliorations</span>
+      </div>
+    </div>
+
+    <div class="g-grid-2">
+      <div class="card c-violet">
+        <span class="card-badge">Feature majeure</span>
+        <h3 class="card-title">ConfirmModal — adieu window.confirm()</h3>
+        <p class="card-body">
+          Nouveau composant React réutilisable en remplacement de tous les
+          <code>window.confirm()</code> et <code>alert()</code>.
+          Pattern <code>useRef + Promise</code> : <code>await askConfirm()</code>
+          retourne <code>true/false</code> comme une confirmation synchrone.
+          Props : <code>message</code>, <code>confirmLabel</code>, <code>danger</code>
+          (fond rouge via <code>var(--a4)</code>).
+          Utilisé dans <code>MemoryPage</code>, <code>CalendarPage</code> et
+          <code>ChatPage</code>.
+        </p>
+        <p class="card-fix">UX cohérente · aucun dialogue natif du navigateur</p>
+      </div>
+      <div class="card c-teal">
+        <span class="card-badge">Feature</span>
+        <h3 class="card-title">CRUD mémoire dans le dashboard</h3>
+        <p class="card-body">
+          <code>MemoryPage</code> entièrement réécrite : sidebar de sections cliquables,
+          éditeur titre + corps, guard dirty state (confirmation avant changement de section),
+          ajout d'une nouvelle section, suppression avec confirmation danger.
+          Sauvegarde → <code>POST /api/memory</code> → écriture <code>memory.md</code>
+          + <code>sync_markdown_to_db()</code>. Préambule (contenu avant le premier <code>##</code>)
+          préservé à chaque round-trip.
+        </p>
+        <p class="card-fix">Mémoire éditable et synchronisée sans CLI</p>
+      </div>
+      <div class="card c-amber">
+        <span class="card-badge">Feature</span>
+        <h3 class="card-title">Confirmation web interactive — recherche web</h3>
+        <p class="card-body">
+          Fini le refus silencieux de <code>needs_web</code> en mode dashboard.
+          Premier appel <code>POST /api/message</code> : si le LLM retourne
+          <code>needs_web=true</code>, l'API répond <code>{needs_web_confirm: true, web_query}</code>
+          au lieu de procéder. Le frontend affiche une <code>ConfirmModal</code>
+          avec la requête figée.
+          Deuxième appel avec <code>web_confirmed: true/false</code> : le backend
+          lance (ou non) <code>web_search()</code> et injecte le contexte dans
+          <code>_route_message()</code>.
+        </p>
+        <p class="card-fix">Parité CLI / dashboard sur la confirmation web</p>
+      </div>
+      <div class="card c-pink">
+        <span class="card-badge">Feature</span>
+        <h3 class="card-title">Rappels dashboard — GET /api/reminders</h3>
+        <p class="card-body">
+          Nouveau endpoint qui parse les blocs <code>## 🔔 Rappel</code> de
+          <code>briefing.md</code> (généré par le scheduler). Chaque rappel reçoit
+          un identifiant MD5 pour la déduplication côté client.
+          <code>App.tsx</code> poll toutes les 60 secondes quand l'onglet est actif.
+          Chaque rappel nouveau déclenche un toast <code>react-toastify</code>.
+          Déduplication par date dans <code>localStorage</code> : un rappel vu
+          aujourd'hui ne réapparaît pas.
+        </p>
+        <p class="card-fix">Rappels planifiés visibles dans le dashboard sans action manuelle</p>
+      </div>
+    </div>
+
+    <div class="g-grid-3" style="margin-top:10px;">
+      <div class="card c-bg c-teal">
+        <span class="card-badge">Fix + Feature</span>
+        <h3 class="card-title">Jours passés — vue semaine</h3>
+        <p class="card-body">
+          <code>get_events_with_uid</code> reçoit un nouveau paramètre
+          <code>from_date</code> : l'API passe le lundi de la semaine courante
+          pour inclure les jours déjà écoulés.
+          Côté frontend : classes CSS <code>pastDay</code> / <code>pastHdr</code> /
+          <code>pastEv</code> grisent les colonnes passées sans les masquer.
+        </p>
+        <p class="card-fix">Semaine complète visible, passé discret</p>
+      </div>
+      <div class="card c-bg c-violet">
+        <span class="card-badge">Feature</span>
+        <h3 class="card-title">[EVAL] — logs de routing</h3>
+        <p class="card-body">
+          Toutes les décisions de routing sont désormais loguées avec leur source :
+          <code>[EVAL] (bypass kw)</code>, <code>(bypass ML)</code> ou <code>(LLM)</code>,
+          dans <code>main.py</code> et <code>api.py</code>.
+          Le JSON d'évaluation complet est affiché à chaque message.
+        </p>
+        <p class="card-fix">Routing transparent et debuggable</p>
+      </div>
+      <div class="card c-bg c-red">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">Coercion web_query / needs_web</h3>
+        <p class="card-body">
+          Incohérence LLM corrigée à deux niveaux : règle absolue ajoutée au prompt
+          (<em>"si web_query est non-null, needs_web DOIT être true"</em>) +
+          coercion code dans <code>main.py</code> après <code>_parse_eval_json</code>.
+          Mots-clés "fouille", "fouille le net", "cherche sur internet" ajoutés.
+          Règle scheduler simplifiée : heure précisée sans date → aujourd'hui,
+          sinon → demain (exemples ISO concrets).
+        </p>
+        <p class="card-fix">Routing web et scheduler fiables sur les petits modèles</p>
+      </div>
+    </div>
+
+    <!-- ── Séparateur sessions ──────────────────────────────── -->
+    <div style="border-top:1px solid var(--border);margin:52px 0 44px;opacity:0.4;"></div>
+
+    <!-- ── v12 · 09 mars 2026 ──────────────────────────────── -->
+    <div class="pn-header">
+      <div>
+        <span class="section-label">Journal de développement</span>
+        <h2 class="section-title">Session du 09 mars 2026</h2>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="pn-date">v12 · 09-03-2026</span>
+        <span class="pn-tag">8 bugs corrigés</span>
+        <span class="pn-tag">Migration React</span>
+      </div>
+    </div>
+
+    <div class="pn-stats">
+      <div class="pn-stat">
+        <span class="pn-stat-n">8</span>
+        <span class="pn-stat-l">Bugs corrigés</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">8</span>
+        <span class="pn-stat-l">Composants React</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">3</span>
+        <span class="pn-stat-l">Fixes CalendarWriteCrew</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">1</span>
+        <span class="pn-stat-l">Commande CLI ajoutée</span>
+      </div>
+    </div>
+
+    <div class="g-grid-2">
+      <div class="card c-violet">
+        <span class="card-badge">Feature majeure</span>
+        <h3 class="card-title">Migration React + TypeScript</h3>
+        <p class="card-body">
+          Le dashboard vanilla JS (1 200+ lignes) migré vers React + TypeScript + Vite avec CSS Modules.
+          8 composants créés : <code>App</code>, <code>NavBar</code>, <code>MessageBubble</code>,
+          <code>ChatPage</code>, <code>MemoryPage</code>, <code>SessionsPage</code>,
+          <code>CalendarPage</code> + wrapper <code>api/index.ts</code> typé.
+          Proxy Vite→FastAPI en dev, build vers <code>src/Mnemo/static/</code>.
+        </p>
+        <p class="card-fix">Dashboard scalable, état centralisé, zéro code spaghetti</p>
+      </div>
+      <div class="card c-red">
+        <span class="card-badge">Fix critique</span>
+        <h3 class="card-title">SPA catch-all bloquant les routes /api/*</h3>
+        <p class="card-body">
+          <code>@app.get("/{full_path:path}")</code> était enregistré avant toutes les routes API
+          dans FastAPI. Après rebuild Docker, toutes les requêtes <code>/api/*</code> retournaient 404.
+          Corrigé en déplaçant le catch-all SPA en toute fin de <code>api.py</code>.
+        </p>
+        <p class="card-fix">Routes API fonctionnelles après rebuild</p>
+      </div>
+      <div class="card c-red">
+        <span class="card-badge">Fix critique</span>
+        <h3 class="card-title">CalendarWriteCrew — UIDs Google (60+ chars)</h3>
+        <p class="card-body">
+          Les UIDs Google Calendar (<code>chj66opo6gsj...@google.com</code>) étaient copiés
+          de façon inexacte par le LLM, causant des erreurs "UID inconnu".
+          Solution : <code>format_events_with_uid</code> passe des indices <code>#N</code>,
+          <code>CalendarWriteCrew.run()</code> résout <code>#N → UID complet</code> en Python avant
+          tout appel <code>delete_event</code> / <code>update_event</code>.
+        </p>
+        <p class="card-fix">Suppression et modification fonctionnelles même avec des UIDs opaques</p>
+      </div>
+      <div class="card c-amber">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">Résolution des dates (noms de jours)</h3>
+        <p class="card-body">
+          Le LLM confondait "samedi" avec aujourd'hui ou calculait une date erronée,
+          faute d'ancre explicite. Ajout de <code>get_week_dates_for_prompt()</code> :
+          table <code>samedi = 2026-03-14, dimanche = 2026-03-15…</code> sur 14 jours,
+          injectée en <code>{week_dates}</code> en tête du prompt CalendarWriteCrew.
+          Contexte injecté réduit de 14 → 7 jours pour limiter le bruit.
+        </p>
+        <p class="card-fix">Dates résolues par lookup direct, sans arithmétique LLM</p>
+      </div>
+    </div>
+
+    <div class="g-grid-3" style="margin-top:10px;">
+      <div class="card c-bg c-violet">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">Sessions illisibles</h3>
+        <p class="card-body">
+          Type <code>SessionMessage</code> incorrect côté frontend
+          (<code>user_message/response</code> vs <code>role/content</code>).
+          Preview API vide (cherchait <code>messages[0].user_message</code>).
+          Les deux corrigés.
+        </p>
+        <p class="card-fix">Bulles de sessions peuplées correctement</p>
+      </div>
+      <div class="card c-bg c-teal">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">_web_mode non propagé</h3>
+        <p class="card-body">
+          CalendarWriteCrew recevait <code>_web_mode=False</code> en contexte web,
+          déclenchant un <code>input()</code> bloquant la requête API.
+          Corrigé dans <code>base_inputs</code> de <code>_route_message()</code>
+          et <code>_detect_calendar_write_intent</code> ajouté au handler web.
+        </p>
+        <p class="card-fix">Calendrier modifiable depuis le dashboard sans blocage</p>
+      </div>
+      <div class="card c-bg c-pink">
+        <span class="card-badge">Fix · Feature</span>
+        <h3 class="card-title">Label "Cette semaine" + <code>rebuild</code></h3>
+        <p class="card-body">
+          Lundi prochain tagué "Cette semaine" (diff flottant &lt; 7 j).
+          Corrigé avec les bornes calendaires réelles (lun–dim).
+          Ajout de <code>./mnemo.sh rebuild</code> :
+          stop → build → up en une commande.
+        </p>
+        <p class="card-fix">Labels d'urgence corrects · workflow rebuild simplifié</p>
+      </div>
+    </div>
+
+    <!-- ── Séparateur sessions ──────────────────────────────── -->
+    <div style="border-top:1px solid var(--border);margin:52px 0 44px;opacity:0.4;"></div>
+
+    <!-- ── v11 · 08 mars 2026 ──────────────────────────────── -->
+    <div class="pn-header">
+      <div>
+        <span class="section-label">Session précédente</span>
         <h2 class="section-title">Session du 08 mars 2026</h2>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
