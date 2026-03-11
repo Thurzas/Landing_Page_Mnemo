@@ -287,9 +287,10 @@ nav {
 
 /* ── Roadmap ────────────────────────────────────────────────── */
 .roadmap-track {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px;
+  display: flex; grid-template-columns: repeat(5, 1fr); gap: 2px;
   margin-top: 60px; border: 1px solid var(--border);
   border-radius: 16px; overflow: hidden;
+  width: fit-content
 }
 .rm-phase {
   padding: 36px 24px; background: var(--surface);
@@ -379,4 +380,28 @@ footer {
   .pipeline-flow { flex-direction: column; }
   .roadmap-track { grid-template-columns: 1fr 1fr; }
   .pn-stats { grid-template-columns: 1fr 1fr; }
+  .roadmap-track{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width:100%;
+    margin: 0 auto;
+  }
+  .rm-phase{
+    width: min(100%, 400px);   
+    justify-content: center; 
+    align-items: center;
+
+  }
+  .rm-items{
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    padding-left: 10px;
+  }
+  .rm-items li{
+    width: max-content;
+    align-items: left;
+  }
 }

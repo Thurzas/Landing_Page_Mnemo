@@ -476,6 +476,134 @@
 <section id="patchnote" class="alt-bg">
   <div class="section-inner reveal">
 
+    <!-- ── v14 · 11 mars 2026 ──────────────────────────────── -->
+    <div class="pn-header">
+      <div>
+        <span class="section-label">Journal de développement</span>
+        <h2 class="section-title">Session du 11 mars 2026</h2>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="pn-date">v14 · 11-03-2026</span>
+        <span class="pn-tag">WebSocket streaming</span>
+        <span class="pn-tag">Sessions web</span>
+        <span class="pn-tag">Calendrier UX</span>
+      </div>
+    </div>
+
+    <div class="pn-stats">
+      <div class="pn-stat">
+        <span class="pn-stat-n">5</span>
+        <span class="pn-stat-l">Bugs corrigés</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">3</span>
+        <span class="pn-stat-l">Features ajoutées</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">1</span>
+        <span class="pn-stat-l">Endpoint ajouté</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">8</span>
+        <span class="pn-stat-l">Fichiers modifiés</span>
+      </div>
+    </div>
+
+    <div class="g-grid-2">
+      <div class="card c-violet">
+        <span class="card-badge">Fix critique</span>
+        <h3 class="card-title">Message streamé disparaissait après réception</h3>
+        <p class="card-body">
+          Race condition dans le handler <code>done</code> du WebSocket : <code>streamBufRef.current = ''</code>
+          s'exécutait immédiatement, avant que React traite l'updater de <code>setMessages</code>
+          qui lisait le ref déjà vidé. Le message apparaissait pendant le streaming puis
+          disparaissait au moment de la finalisation.
+          Fix : capture de <code>const finalContent = streamBufRef.current</code> avant le reset,
+          passage de la valeur snapshot à l'updater.
+        </p>
+        <p class="card-fix">ChatPage.tsx — streaming → messages persistants</p>
+      </div>
+      <div class="card c-red">
+        <span class="card-badge">Fix critique</span>
+        <h3 class="card-title">Sessions web jamais créées</h3>
+        <p class="card-body">
+          Trois causes en cascade. (1) <code>ingest_tools.py</code> importait <code>DB_PATH</code>
+          depuis <code>memory_tools</code> — symbole supprimé lors de la migration multi-utilisateurs :
+          <code>ImportError</code> sur chaque message, <code>update_session_memory</code> jamais appelée.
+          (2) <code>main.py</code> a un appel module-level <code>_set_data_dir("/data")</code> ;
+          importé lazily dans <code>user_context.run()</code>, ce code écrasait le chemin utilisateur.
+          (3) Fix : import anticipé de <code>main.py</code> au démarrage API
+          (<code>import Mnemo.main as _mnemo_main</code>) + <code>DB_PATH</code> remplac�� par
+          <code>_db_path_default()</code> dans <code>ingest_tools.py</code>.
+        </p>
+        <p class="card-fix">api.py · ingest_tools.py — sessions écrites dans users/{username}/sessions/</p>
+      </div>
+      <div class="card c-teal">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">Décalage d'une heure — vue Semaine calendrier</h3>
+        <p class="card-body">
+          Le gutter des heures n'avait pas d'espaceur en haut alors que les colonnes de jours
+          ont un header de 44 px : toutes les étiquettes horaires apparaissaient une ligne trop haut.
+          Fix : ajout d'un <code>&lt;div className={styles.weekGutterSpacer} /&gt;</code> dans le
+          gutter + CSS <code>height: 44px</code> associé.
+        </p>
+        <p class="card-fix">CalendarPage.tsx — alignement heure exact</p>
+      </div>
+      <div class="card c-amber">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">TypeScript — champ <code>duration</code> inexistant</h3>
+        <p class="card-body">
+          Migration <code>ModalState.duration</code> → <code>endTime</code> incomplète :
+          <code>openEdit</code>, <code>submit</code> (×2) et le JSX référençaient encore
+          <code>modal.duration</code> après la mise à jour du type. Les 4 occurrences corrigées.
+          La durée est désormais calculée automatiquement via
+          <code>timeDiffMinutes(modal.time, modal.endTime)</code> (minimum 15 min).
+        </p>
+        <p class="card-fix">CalendarPage.tsx — build TypeScript propre</p>
+      </div>
+    </div>
+
+    <div class="g-grid-3" style="margin-top:10px;">
+      <div class="card c-bg c-violet">
+        <span class="card-badge">Feature</span>
+        <h3 class="card-title">Import de fichier ICS</h3>
+        <p class="card-body">
+          Bouton <em>↑ ICS</em> dans le header du calendrier (visible si <code>writable</code>).
+          Endpoint <code>POST /api/calendar/import</code> : parse le fichier uploadé,
+          fusionne les VEVENTs dans le calendrier local, déduplique par UID existant.
+          Retourne <code>{"imported": N, "skipped": M}</code> avec toast de confirmation.
+        </p>
+        <p class="card-fix">Import sans doublon · feedback immédiat</p>
+      </div>
+      <div class="card c-bg c-teal">
+        <span class="card-badge">Feature UX</span>
+        <h3 class="card-title">Heure de fin à la place de Durée (min)</h3>
+        <p class="card-body">
+          Le formulaire d'ajout / modification d'événement affiche désormais un champ
+          <em>Heure de fin</em> (<code>&lt;input type="time"&gt;</code>) plutôt qu'une durée
+          en minutes. Plus naturel : <em>"de 14h à 17h"</em> au lieu de <em>"180 minutes"</em>.
+          La durée est calculée automatiquement à la soumission.
+        </p>
+        <p class="card-fix">CalendarPage.tsx — UX alignée sur les habitudes utilisateurs</p>
+      </div>
+      <div class="card c-bg c-amber">
+        <span class="card-badge">Feature</span>
+        <h3 class="card-title">Consolidation automatique à la reconnexion</h3>
+        <p class="card-body">
+          À chaque connexion WebSocket authentifiée, <code>consolidate_orphan_sessions()</code>
+          s'exécute dans le contexte utilisateur via <code>run_in_executor</code>.
+          Scanne <code>sessions/*.json</code> sans marker <code>.done</code>,
+          lance <code>ConsolidationCrew</code> sur chacune → extraction des faits →
+          <code>memory.md</code> + sync SQLite + marker <code>.done</code>.
+          Parité avec le comportement CLI au démarrage (crash recovery).
+        </p>
+        <p class="card-fix">api.py — mémoire consolidée même sans fermeture propre</p>
+      </div>
+    </div>
+
+    <!-- ── Séparateur sessions ──────────────────────────────── -->
+    <div style="border-top:1px solid var(--border);margin:52px 0 44px;opacity:0.4;"></div>
+
     <!-- ── v13 · 10 mars 2026 ──────────────────────────────── -->
     <div class="pn-header">
       <div>
