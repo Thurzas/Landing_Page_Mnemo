@@ -22,7 +22,7 @@
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#patchnote">Patch note</a></li>
   </ul>
-  <span class="nav-badge">Phase 3 · actif</span>
+  <span class="nav-badge">Phase 4 · actif</span>
 </nav>
 
 <!-- ── Hero ─────────────────────────────────────────────────── -->
@@ -475,6 +475,136 @@
 <!-- ── Patch note ────────────────────────────────────────────── -->
 <section id="patchnote" class="alt-bg">
   <div class="section-inner reveal">
+
+    <!-- ── v15 · 14-16 mars 2026 ───────────────────────────── -->
+    <div class="pn-header">
+      <div>
+        <span class="section-label">Journal de développement</span>
+        <h2 class="section-title">Sessions du 14 au 16 mars 2026</h2>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="pn-date">v15 · 14-16-03-2026</span>
+        <span class="pn-tag">Kokoro-82M</span>
+        <span class="pn-tag">Interface Voix</span>
+        <span class="pn-tag">RVC à chaud</span>
+      </div>
+    </div>
+
+    <div class="pn-stats">
+      <div class="pn-stat">
+        <span class="pn-stat-n">6</span>
+        <span class="pn-stat-l">Bugs corrigés</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">3</span>
+        <span class="pn-stat-l">Features ajoutées</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">1</span>
+        <span class="pn-stat-l">Onglet dashboard</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">10</span>
+        <span class="pn-stat-l">Fichiers modifiés</span>
+      </div>
+    </div>
+
+    <div class="g-grid-2">
+      <div class="card c-violet">
+        <span class="card-badge">Feature majeure</span>
+        <h3 class="card-title">Kokoro-82M — TTS multilingue unifié</h3>
+        <p class="card-body">
+          Remplacement de Piper par Kokoro-82M (~327 MB pour la gestion des voix françaises et japonaises). Modèle HuggingFace <code>GustavZ/kokoro-82m</code>
+           (fork de,
+          <code>hexgrad/Kokoro-82M</code>). Téléchargement automatique au premier appel dans
+          <code>/data/models/</code> (volume persistant). Détection de langue par plage Unicode :
+          hiragana / katakana / kanji → pipeline japonais, sinon → pipeline français.
+          Double-checked locking pour les deux singletons (<code>_kokoro_pipeline_fr</code>,
+          <code>_kokoro_pipeline_ja</code>) — thread-safe dès l'initialisation.
+        </p>
+        <p class="card-fix">audio_tools.py — Piper supprimé, Kokoro-82M en production</p>
+      </div>
+      <div class="card c-teal">
+        <span class="card-badge">Feature</span>
+        <h3 class="card-title">Flux audio par phrases — prefetch-1 pool</h3>
+        <p class="card-body">
+          Le frontend découpe la réponse en phrases avant d'appeler
+          <code>POST /api/tts</code>. Seules 2 requêtes coexistent à tout moment :
+          la phrase en lecture et la suivante en prefetch.
+          Supprime les chevauchements audio et les race conditions sur le singleton Kokoro.
+          Pattern : <code>nextFetch</code> lancé avant <code>await fetchPromise</code>,
+          puis lu en séquence.
+        </p>
+        <p class="card-fix">ChatPage.tsx — latence perçue réduite, zéro superposition</p>
+      </div>
+      <div class="card c-amber">
+        <span class="card-badge">Feature</span>
+        <h3 class="card-title">Onglet Voix — paramétrage RVC à chaud</h3>
+        <p class="card-body">
+          Nouveau <code>VoicePage.tsx</code> dans le dashboard : choix de voix Kokoro (FR / JA),
+          vitesse, toggle RVC on/off, 6 sliders RVC (<code>f0_method</code>, <code>f0_up_key</code>,
+          <code>index_rate</code>, <code>filter_radius</code>, <code>rms_mix_rate</code>,
+          <code>protect</code>), upload de modèle <code>.pth</code> + <code>.index</code> custom,
+          bouton <em>Tester</em> (applique les réglages du formulaire au runtime sans sauvegarder)
+          et bouton <em>Sauvegarder</em> (persiste dans <code>/data/voice_settings.json</code>).
+        </p>
+        <p class="card-fix">VoicePage.tsx · api.py — réglages voix sans redémarrage</p>
+      </div>
+      <div class="card c-red">
+        <span class="card-badge">Fix critique</span>
+        <h3 class="card-title">espeak-ng crash — tmpfs noexec</h3>
+        <p class="card-body">
+          <code>phonemizer</code> copie <code>libespeak-ng.so</code> dans <code>/tmp</code>
+          et la charge via <code>ctypes</code>. Le tmpfs Docker est <code>noexec</code> par défaut
+          → <code>OSError: failed to map segment from shared object</code>.
+          Fix : <code>tmpfs: - /tmp:size=256m,mode=1777,exec</code> dans
+          <code>docker-compose.yml</code>.
+        </p>
+        <p class="card-fix">docker-compose.yml — Kokoro japonais fonctionnel en container</p>
+      </div>
+    </div>
+
+    <div class="g-grid-3" style="margin-top:10px;">
+      <div class="card c-bg c-red">
+        <span class="card-badge">Fix critique</span>
+        <h3 class="card-title">HuggingFace cache — filesystem en lecture seule</h3>
+        <p class="card-body">
+          L'image est <code>read_only: true</code>. HF Hub écrit des lock files dans
+          <code>HF_HOME</code>. Tentatives en <code>/tmp</code> et <code>/app/models</code>
+          → échecs. Fix : <code>HF_HOME=/data/models</code> (volume en écriture),
+          suppression de <code>HF_HUB_OFFLINE=1</code>. Kokoro se télécharge une fois,
+          est mis en cache de façon persistante.
+        </p>
+        <p class="card-fix">dockerfile · docker-compose.yml — cache HF sur volume /data</p>
+      </div>
+      <div class="card c-bg c-amber">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">MeCab / unidic — dictionnaire absent</h3>
+        <p class="card-body">
+          <code>misaki[ja]</code> installe le package <code>unidic</code> mais pas ses données
+          de dictionnaire. Premier appel TTS japonais → <code>RuntimeError: Failed initializing
+          MeCab</code>. Fix : ajout de <code>python -m unidic download</code> dans le
+          <code>dockerfile</code> après l'installation de <code>requirements.audio.txt</code>.
+        </p>
+        <p class="card-fix">dockerfile — japonais opérationnel après rebuild</p>
+      </div>
+      <div class="card c-bg c-teal">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">torch.Tensor.astype() + voix ff_emma inexistante</h3>
+        <p class="card-body">
+          Kokoro retourne un <code>torch.Tensor</code>, le code supposait un
+          <code>np.ndarray</code> → <code>AttributeError: 'Tensor' has no attribute 'astype'</code>.
+          Fix : <code>if hasattr(audio, "numpy"): audio = audio.numpy()</code>.
+          Voix <code>ff_emma</code> et <code>fm_galvani</code> retirées de
+          <code>KOKORO_VOICES_FR</code> (inexistantes dans Kokoro-82M) — seul
+          <code>ff_siwis</code> est disponible côté français.
+        </p>
+        <p class="card-fix">audio_tools.py — TTS 500 résolu, liste voix exacte</p>
+      </div>
+    </div>
+
+    <!-- ── Séparateur sessions ──────────────────────────────── -->
+    <div style="border-top:1px solid var(--border);margin:52px 0 44px;opacity:0.4;"></div>
 
     <!-- ── v14 · 11 mars 2026 ──────────────────────────────── -->
     <div class="pn-header">
