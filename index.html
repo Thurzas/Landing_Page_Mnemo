@@ -22,7 +22,7 @@
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#patchnote">Patch note</a></li>
   </ul>
-  <span class="nav-badge">Phase 4 · actif</span>
+  <span class="nav-badge">Phase 5-6 · actif</span>
 </nav>
 
 <!-- ── Hero ─────────────────────────────────────────────────── -->
@@ -48,7 +48,7 @@
 
   <div class="hero-stats">
     <div class="hstat">
-      <span class="hstat-num">8</span>
+      <span class="hstat-num">10</span>
       <span class="hstat-label">Crews spécialisés</span>
     </div>
     <div class="hstat">
@@ -60,7 +60,7 @@
       <span class="hstat-label">Routes ML</span>
     </div>
     <div class="hstat">
-      <span class="hstat-num">787</span>
+      <span class="hstat-num">1076</span>
       <span class="hstat-label">Tests passants</span>
     </div>
   </div>
@@ -387,9 +387,9 @@
     <span class="section-label">Développement</span>
     <h2 class="section-title">De la mémoire<br>à l'autonomie.</h2>
     <p class="section-desc">
-      Cinq phases. Les trois premières sont complètes ou en cours.
-      L'objectif final : un assistant capable d'agir et d'apprendre
-      en continu, sans intervention manuelle.
+      Huit phases (0–7). Cinq complètes, une en cours, deux planifiées.
+      L'objectif final : un assistant capable d'agir, d'apprendre
+      et de s'interfacer avec n'importe quel support.
     </p>
 
     <div class="roadmap-track">
@@ -420,7 +420,7 @@
       <div class="rm-phase rm-done">
         <span class="rm-status">Complet</span>
         <div class="rm-phase-num">2</div>
-        <h3 class="rm-title">Ingestion &amp; web</h3>
+        <h3 class="rm-title">Perception</h3>
         <ul class="rm-items">
           <li>PDF, DOCX, TXT, code</li>
           <li>Calendrier ICS + RRULE</li>
@@ -434,36 +434,63 @@
         <div class="rm-phase-num">3</div>
         <h3 class="rm-title">Action locale</h3>
         <ul class="rm-items">
-          <li class="done">ShellCrew + whitelist</li>
-          <li class="done">SchedulerCrew multi-tâches</li>
-          <li class="done">BriefingCrew + scheduler</li>
-          <li class="done">NoteWriterCrew</li>
-          <li class="done">Fichiers (move, rename)</li>
-          <li class="done">CalDAV CRUD</li>
-          <li class="done">Dashboard web</li>
+          <li>ShellCrew + whitelist</li>
+          <li>SchedulerCrew multi-tâches</li>
+          <li>BriefingCrew + scheduler Docker</li>
+          <li>NoteWriterCrew</li>
+          <li>CalendarWriteCrew (ICS local)</li>
+        </ul>
+      </div>
+      <div class="rm-phase rm-done">
+        <span class="rm-status">Complet</span>
+        <div class="rm-phase-num">4</div>
+        <h3 class="rm-title">API &amp; Interfaces</h3>
+        <ul class="rm-items">
+          <li>REST API FastAPI + WebSocket</li>
+          <li>Dashboard web React</li>
+          <li>Streaming token-par-token</li>
+          <li>TTS Kokoro-82M (FR + JA)</li>
+          <li>STT faster-whisper</li>
+          <li>Pipeline voix RVC</li>
         </ul>
       </div>
       <div class="rm-phase rm-active">
         <span class="rm-status">En cours</span>
-        <div class="rm-phase-num">4</div>
-        <h3 class="rm-title">Autonomie</h3>
+        <div class="rm-phase-num">5</div>
+        <h3 class="rm-title">Proactivité</h3>
         <ul class="rm-items">
-          <li class="wip">Apprentissage actif</li>
-          <li class="pending">Routing auto-affiné</li>
-          <li class="pending">Proactivité planifiée</li>
-          <li class="pending">Multi-device sync</li>
+          <li class="done">Routing CoR refactorisé</li>
+          <li class="done">Poids adaptatifs par profil</li>
+          <li class="done">MemoryGapReport + WorldState</li>
+          <li class="pending">Détection de routines</li>
+          <li class="pending">Compression memory.md</li>
+          <li class="pending">Multi-profils</li>
+        </ul>
+      </div>
+      <div class="rm-phase rm-done">
+        <span class="rm-status">Complet</span>
+        <div class="rm-phase-num">6</div>
+        <h3 class="rm-title">GOAP Planner</h3>
+        <ul class="rm-items">
+          <li>Backward chaining + tri topologique</li>
+          <li>ACTION_REGISTRY — 9 actions</li>
+          <li>PlanStore (plan.md persistant)</li>
+          <li>PlannerCrew + ReconnaissanceCrew</li>
+          <li>PlanRunner — arrêt au bloquant</li>
+          <li>Scheduler migré vers GOAP</li>
         </ul>
       </div>
       <div class="rm-phase rm-pending">
-        <div class="rm-phase-num">5</div>
-          <span class="rm-status">⬜ Planifiée</span>
-          <div class="rm-title">Proactivité</div>
-          <ul class="rm-items">
-            <li>Suggestions contextualisées</li>
-            <li>Détection de routines</li>
-            <li>Compression memory.md</li>
-            <li>Multi-profils</li>
-          </ul>
+        <span class="rm-status">Planifiée</span>
+        <div class="rm-phase-num">7</div>
+        <h3 class="rm-title">Interfaces externes</h3>
+        <ul class="rm-items">
+          <li>Client Raspberry Pi (API REST)</li>
+          <li>Optimisation latence embarqué</li>
+          <li>Desktop pet Unity (C# client)</li>
+          <li>Streaming token → animation</li>
+          <li>Multi-device sync</li>
+        </ul>
       </div>
 
     </div>
@@ -475,6 +502,142 @@
 <!-- ── Patch note ────────────────────────────────────────────── -->
 <section id="patchnote" class="alt-bg">
   <div class="section-inner reveal">
+
+    <!-- ── v16 · 17-18 mars 2026 ───────────────────────────── -->
+    <div class="pn-header">
+      <div>
+        <span class="section-label">Journal de développement</span>
+        <h2 class="section-title">Sessions du 17 au 18 mars 2026</h2>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="pn-date">v16 · 17-18-03-2026</span>
+        <span class="pn-tag">GOAP Planner</span>
+        <span class="pn-tag">Phase 6</span>
+        <span class="pn-tag">Poids adaptatifs</span>
+      </div>
+    </div>
+
+    <div class="pn-stats">
+      <div class="pn-stat">
+        <span class="pn-stat-n">5</span>
+        <span class="pn-stat-l">Bugs corrigés</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">7</span>
+        <span class="pn-stat-l">Étapes implémentées</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">+129</span>
+        <span class="pn-stat-l">Nouveaux tests</span>
+      </div>
+      <div class="pn-stat">
+        <span class="pn-stat-n">14</span>
+        <span class="pn-stat-l">Fichiers créés</span>
+      </div>
+    </div>
+
+    <div class="g-grid-2">
+      <div class="card c-violet">
+        <span class="card-badge">Feature majeure · Phase 6</span>
+        <h3 class="card-title">GOAP Planner — planification par objectifs</h3>
+        <p class="card-body">
+          Implémentation complète d'un planificateur GOAP (<em>Goal-Oriented Action Planning</em>)
+          en backward chaining avec tri topologique. 9 actions dans l'<code>ACTION_REGISTRY</code>
+          (FetchCalendar, SyncMemory, AssessMemoryGaps, FillBlockingGaps, ReconModule, CreatePlan,
+          GenerateBriefing, GenerateWeekly, SendDeadlineAlert). Le scheduler est migré : les tâches
+          système (<code>briefing</code>, <code>weekly</code>, <code>deadline_alert</code>)
+          passent désormais par <code>goap_dispatch(goal)</code> — le planner calcule automatiquement
+          la séquence d'actions optimale. Comportement émergent : <code>user_online=False</code>
+          bloque <code>FillBlockingGaps</code> sans code spécifique.
+        </p>
+        <p class="card-fix">goap/planner.py · scheduler.py — scheduler piloté par objectifs</p>
+      </div>
+      <div class="card c-teal">
+        <span class="card-badge">Feature majeure · Phase 6</span>
+        <h3 class="card-title">PlannerCrew + ReconnaissanceCrew</h3>
+        <p class="card-body">
+          Deux nouveaux crews. <strong>ReconnaissanceCrew</strong> : lit les fichiers source en Python
+          (sans LLM) à partir des hints extraits du message utilisateur, puis effectue une synthèse
+          LLM unique → <code>recon_context</code> persisté dans <code>world_state.json</code>.
+          Évite toute hallucination sur des symboles inexistants.
+          <strong>PlannerCrew</strong> : charge les lacunes mémoire du WorldState, génère un plan
+          structuré via LLM, et le persiste dans <code>plan.md</code> via <code>PlanStore</code>.
+          Déclenché automatiquement quand la complexité est élevée.
+        </p>
+        <p class="card-fix">crew.py · routing/dispatch.py — route "plan" opérationnelle</p>
+      </div>
+      <div class="card c-amber">
+        <span class="card-badge">Feature · Phase 6</span>
+        <h3 class="card-title">PlanStore + PlanRunner — plans persistants</h3>
+        <p class="card-body">
+          <code>PlanStore</code> : I/O Markdown avec cases <code>[ ]</code>/<code>[x]</code>,
+          sections <em>Étapes / Bloquants / Journal</em>, statut structuré. Opérations :
+          <code>create()</code>, <code>get_next_step()</code>, <code>mark_done()</code>,
+          <code>add_blocker()</code>, <code>append_log()</code>.
+          <code>PlanRunner</code> : exécute les steps via un dictionnaire d'executors
+          (<code>_STEP_EXECUTOR</code>), s'arrête au premier bloquant (option B).
+          <code>check_active_plans()</code> appelé au démarrage de chaque session pour reprendre
+          les plans en cours.
+        </p>
+        <p class="card-fix">tools/plan_tools.py · main.py — planification persistante inter-sessions</p>
+      </div>
+      <div class="card c-green">
+        <span class="card-badge">Feature · Phase 5.5-5.6</span>
+        <h3 class="card-title">Poids adaptatifs par profil + MemoryGapReport</h3>
+        <p class="card-body">
+          <strong>Phase 5.5</strong> : poids appris par profil d'usage
+          (<code>learned_weights_{profile}.json</code>), régression vers la moyenne
+          (<code>REGRESSION_RATE=0.05</code>), audit trail (<code>learned_weights_history.jsonl</code>,
+          purge > 90 jours). Priorité : <em>statique → learned_global → learned_profil → overrides</em>.
+          <br><br>
+          <strong>Phase 5.6</strong> : <code>MemoryGapReport</code> structure les lacunes en
+          <em>bloquantes</em> vs <em>enrichissantes</em>. <code>to_world_state()</code> génère
+          les flags GOAP (<code>memory_gaps_known</code>, <code>memory_blocking_gaps</code>,
+          <code>memory_completeness</code>). Persisté dans <code>world_state.json</code>.
+        </p>
+        <p class="card-fix">memory_tools.py · main.py — mémoire auto-évaluée et GOAP-ready</p>
+      </div>
+    </div>
+
+    <div class="g-grid-3" style="margin-top:10px;">
+      <div class="card c-bg c-red">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">Clamp WEIGHT_MAX — régression bloquée</h3>
+        <p class="card-body">
+          Le test de régression vers la moyenne échouait : <code>base["identité"]=2.8</code>
+          produisait un poids brut de 3.08 — au-dessus de <code>WEIGHT_MAX=3.0</code> avant
+          ET après régression, les deux clampés à 3.0, delta=0.
+          Fix : <code>base["identité"]=2.5</code> → poids brut 2.75, régression mesurable.
+        </p>
+        <p class="card-fix">test_active_learning.py — test régression valide</p>
+      </div>
+      <div class="card c-bg c-red">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">GOAP — effets négatifs non résolus</h3>
+        <p class="card-body">
+          <code>_actions_that_produce()</code> ne gérait que les effets <code>True</code>.
+          <code>FillBlockingGaps</code> a <code>effects={"memory_blocking_gaps": False}</code>
+          → jamais sélectionné par le planner.
+          Fix : signature étendue à <code>_actions_that_produce(key, value, actions)</code>
+          pour matcher toute valeur d'effet.
+        </p>
+        <p class="card-fix">goap/planner.py — effets booléens correctement résolus</p>
+      </div>
+      <div class="card c-bg c-amber">
+        <span class="card-badge">Fix</span>
+        <h3 class="card-title">Keywords plan — faux positifs par sous-chaîne</h3>
+        <p class="card-body">
+          "implémenter" matchait le keyword strong "implémente" → route forcée vers
+          <code>plan</code> sur n'importe quel verbe contenant la sous-chaîne.
+          Fix : <code>re.search(r"\b" + re.escape(kw) + r"\b")</code> pour les
+          keywords mono-mot sans espace ni tiret.
+        </p>
+        <p class="card-fix">routing/handlers/keyword.py — détection plan précise</p>
+      </div>
+    </div>
+
+    <!-- ── Séparateur sessions ──────────────────────────────── -->
+    <div style="border-top:1px solid var(--border);margin:52px 0 44px;opacity:0.4;"></div>
 
     <!-- ── v15 · 14-16 mars 2026 ───────────────────────────── -->
     <div class="pn-header">
